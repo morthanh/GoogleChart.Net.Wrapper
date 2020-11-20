@@ -3,11 +3,17 @@ using System.Text.Json.Serialization;
 
 namespace GoogleChart.Net.Wrapper
 {
+
+    /// <summary>
+    /// Represents a column for use with <see cref="DataTable"/>. 
+    /// </summary>
     public class Column
     {
 
 
-
+        /// <summary>
+        /// Optional id for use when referencing this <see cref="Column"/> from JavaScript
+        /// </summary>
         [JsonPropertyName("id")]
         public string Id { get; internal set; }
 

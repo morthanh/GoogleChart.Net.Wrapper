@@ -31,7 +31,10 @@ namespace GoogleChart.Net.Wrapper
         internal IList<ColumnType> ColumnTypes { get => columnTypes; set => columnTypes = value; }
 
 
-
+        /// <summary>
+        /// Add a column to the <see cref="DataTable"/>
+        /// </summary>
+        /// <param name="column"></param>
         public void AddColumn(Column column)
         {
             if (rows.Any())
