@@ -1,0 +1,29 @@
+﻿@inject IJSRuntime JS
+@code{
+    [Parameter] public ChartType ChartType { get; set; }
+
+    [Parameter] public DataTable DataTable { get; set; }
+
+    [Parameter] public BaseChartOptions Options { get; set; }
+
+    private string ElemId { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ElemId = Guid.NewGuid().ToString();
+    }
+
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        string dataJson = DataTable.ToJson();
+        string optionJson = Options?.ToJson();
+
+        return JS.InvokeVoidAsync("window.GoogleChart.Draw", "LineChart", ElemId, dataJson, optionJson).AsTask();
+
+
+
+    }
+}
+<div id="@ElemId"></div>

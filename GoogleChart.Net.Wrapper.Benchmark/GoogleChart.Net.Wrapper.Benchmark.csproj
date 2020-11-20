@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <TargetFrameworks>net5.0</TargetFrameworks>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.12.1.1420" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GoogleChart.Net.Wrapper\GoogleChart.Net.Wrapper.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="BenchmarkDotNet.Artifacts\" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net48' ">
+    <PackageReference Include="System.Memory" Version="4.5.4" />
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+  
+</Project>

@@ -1,0 +1,24 @@
+﻿@page "/Examples/Blazor1"
+@using GoogleChart.Net.Wrapper.Extensions
+@code {
+
+    private DataTable MyDataTable { get; set; }
+
+    private BaseChartOptions MyOptions { get; set; }
+
+    protected override void OnInitialized()
+    {
+        int i = 0;
+        MyDataTable = Data.TestData.Data2DimRandom.ToDataTable(conf =>
+        {
+            conf.AddColumn(_ => i++);
+            conf.AddColumn(x => x.Item1);
+            conf.AddColumn(x => x.Item2);
+        });
+
+        MyOptions = new LineChartOptions { Height = 200, Width = 500, Title = "Line chart with Blazor component from different assembly" };
+    }
+}
+
+<Chart ChartType="ChartType.LineChart" DataTable="MyDataTable" Options="MyOptions"></Chart>
+

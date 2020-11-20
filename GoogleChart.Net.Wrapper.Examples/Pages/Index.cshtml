@@ -1,0 +1,28 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+
+<div class="card" style="width: 18rem">
+    <h5 class="card-header">
+        Examples
+    </h5>
+    <div class="card-body">
+        <ul class="list-group">
+            <li class="list-group-item list-group-item-action">
+                <a asp-page="Examples/LineChart1">Line chart 1</a>
+            </li>
+            <li class="list-group-item list-group-item-action">
+                <a asp-page="Examples/LineChart2">Line chart 2</a>
+            </li>
+            <li class="list-group-item list-group-item-action">
+                <a asp-page="Examples/AreaChart">Area chart</a>
+            </li>
+            <li class="list-group-item list-group-item-action">
+                <a href="~/Examples/Blazor1">Blazor</a>
+            </li>
+        </ul>
+    </div>
+</div>

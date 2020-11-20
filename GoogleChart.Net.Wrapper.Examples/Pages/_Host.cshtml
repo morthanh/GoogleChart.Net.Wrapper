@@ -1,0 +1,12 @@
+﻿@page "/blazor"
+
+@{
+    Layout = "_Layout";
+}
+
+<app>
+    @(await Html.RenderComponentAsync<App>(RenderMode.Server))
+</app>
+
+<script src="_content/GoogleChart.Net.Wrapper.Blazor/GoogleChartBlazor.js"></script>
+<script src="_framework/blazor.server.js"></script>
