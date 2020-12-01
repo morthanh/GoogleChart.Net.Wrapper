@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Linq;
 using GoogleChart.Net.Wrapper.Tests;
+using System.Threading;
 
 namespace GoogleChart.Net.Wrapper.Extensions.Tests
 {
@@ -97,5 +98,29 @@ namespace GoogleChart.Net.Wrapper.Extensions.Tests
             var jrowsElem = jelem.GetProperty("rows");
             Assert.AreEqual(10, jrowsElem.GetArrayLength());
         }
+
+
+        [Test]
+        public void ToDataTableLinqTest()
+        {
+
+            var values = Enumerable.Range(0, 10).Select(x => new { Name = "Test", Value = x })
+                .ToList();
+
+            var dt = values
+                .ToDataTableLinq(config =>
+                {
+                    config.AddColumn(x => x.Name);
+                    config.AddColumn(ColumnType.Number, x => x.Value);
+                });
+
+
+            var json = dt.ToJson();
+
+            var jelem = JsonHelper.Deserialize(json);
+            var jrowsElem = jelem.GetProperty("rows");
+            Assert.AreEqual(10, jrowsElem.GetArrayLength());
+        }
+
     }
 }

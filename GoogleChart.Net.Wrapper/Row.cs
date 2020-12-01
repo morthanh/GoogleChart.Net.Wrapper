@@ -6,12 +6,12 @@ using System.Text.Json.Serialization;
 namespace GoogleChart.Net.Wrapper
 {
     [JsonConverter(typeof(RowConverter))]
-    public class Row
+    public sealed class Row
     {
-        private readonly IList<Cell> cells = new List<Cell>();
+        private IEnumerable<Cell> cells = new List<Cell>();
         private readonly DataTable dataTable;
 
-        internal IList<Cell> Cells => cells;
+        internal IEnumerable<Cell> Cells { get => cells; set => cells = value; }
 
         [JsonIgnore]
         internal DataTable DataTable => dataTable;
@@ -30,15 +30,15 @@ namespace GoogleChart.Net.Wrapper
         }
 
 
-        private void AddCell(Cell cell)
-        {
-            if (cell is null)
-            {
-                throw new ArgumentNullException(nameof(cell));
-            }
+        //private void AddCell(Cell cell)
+        //{
+        //    if (cell is null)
+        //    {
+        //        throw new ArgumentNullException(nameof(cell));
+        //    }
 
-            Cells.Add(cell);
-        }
+        //    Cells.Add(cell);
+        //}
 
         internal void AddCells(IEnumerable<Cell> cells)
         {
@@ -47,10 +47,11 @@ namespace GoogleChart.Net.Wrapper
                 throw new ArgumentNullException(nameof(cells));
             }
 
-            foreach (var cell in cells)
-            {
-                AddCell(cell);
-            }
+            this.cells = cells;
+            //foreach (var cell in cells)
+            //{
+            //    AddCell(cell);
+            //}
         }
 
     }
