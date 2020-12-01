@@ -21,7 +21,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GH_PACKAGE}}
         run: |
-          printf "\n\n$(date)" >> README.md
           git add .
           git commit -m "test"
           git push "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
