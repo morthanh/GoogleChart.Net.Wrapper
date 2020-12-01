@@ -85,9 +85,83 @@ namespace GoogleChart.Net.Wrapper
 
         public DataTable Build()
         {
-            dataTable.AddRowsSource(source.Select(x => new Row(dataTable, valueSelectors.Select(f => f(x)))));
+
+            var r = new Row(dataTable);
+            dataTable.AddRowsSource(source.Select(x =>
+            {
+                r.Cells = valueSelectors.Select(f => f(x));
+                return r;
+            }));
 
             return dataTable;
+        }
+
+    }
+    public class DataTableLinqConfiguration<T>
+    {
+        private readonly IEnumerable<T> source;
+        private readonly DataTableLinq dataTable = new DataTableLinq();
+        private readonly List<Func<T, object>> valueSelectors = new List<Func<T, object>>();
+
+        internal DataTableLinqConfiguration(IEnumerable<T> source)
+        {
+            this.source = source;
+        }
+
+        internal DataTableLinq DataTable => dataTable;
+
+
+
+        public DataTableLinqConfiguration<T> AddColumn<TReturn>(Func<T, TReturn> valueSelector)
+        {
+            var returnTypeCode = Type.GetTypeCode(typeof(TReturn));
+
+            switch (returnTypeCode)
+            {
+                case TypeCode.Single:
+                case TypeCode.Double:
+                case TypeCode.Int32:
+                    dataTable.AddColumn(new Column(ColumnType.Number));
+                    break;
+                case TypeCode.String:
+                    dataTable.AddColumn(new Column(ColumnType.String));
+                    break;
+                default:
+                    throw new NotSupportedException($"Returtype '{returnTypeCode}' is not yet supported");
+            }
+
+            valueSelectors.Add((c) => valueSelector(c));
+            return this;
+        }
+
+
+
+
+        public DataTableLinqConfiguration<T> AddColumn(ColumnType columnType, Func<T, object> valueSelector)
+        {
+            dataTable.AddColumn(new Column(columnType));
+            valueSelectors.Add(x => valueSelector(x));
+            return this;
+        }
+
+
+
+        public DataTableLinq Build()
+        {
+            dataTable.ValuesSource = ValueSourceEnumerator();
+            return dataTable;
+        }
+
+        private IEnumerable<object> ValueSourceEnumerator()
+        {
+            int cIdx;
+            foreach(var elem in source)
+            {
+                for (cIdx = 0; cIdx < valueSelectors.Count; cIdx++)
+                {
+                    yield return valueSelectors[cIdx](elem);
+                }
+            }
         }
 
     }

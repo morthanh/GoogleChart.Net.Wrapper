@@ -15,6 +15,14 @@ namespace GoogleChart.Net.Wrapper.Extensions
             return configurations.DataTable;
         }
 
+        public static DataTableLinq ToDataTableLinq<T>(this IEnumerable<T> source, Action<DataTableLinqConfiguration<T>> config)
+        {
+            var configurations = new DataTableLinqConfiguration<T>(source);
+            config(configurations);
+            configurations.Build();
+            return configurations.DataTable;
+        }
+
         public static DataTableConfiguration<T> ToDataTable<T>(this IEnumerable<T> source)
         {
             return new DataTableConfiguration<T>(source);

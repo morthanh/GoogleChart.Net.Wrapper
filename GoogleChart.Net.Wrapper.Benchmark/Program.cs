@@ -4,39 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GoogleChart.Net.Wrapper.Extensions;
-using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Toolchains.InProcess.Emit;
-using BenchmarkDotNet.Jobs;
-using BenchmarkDotNet.Toolchains.DotNetCli;
-using BenchmarkDotNet.Toolchains.CsProj;
 
 namespace GoogleChart.Net.Wrapper.Benchmark
 {
     class Program
     {
-        //static void Main(string[] args)
-        //{
-        //    var config = ManualConfig.Create(DefaultConfig.Instance);
-        //    _ = config.AddJob(Job.ShortRun.WithToolchain(InProcessEmitToolchain.Instance));
-        //    var summery = BenchmarkRunner.Run<Test>(config);
-        //}
-
-        //static void Main(string[] args) => BenchmarkSwitcher.FromAssemblies(new[] { typeof(Program).Assembly }).Run(args);
 
         static void Main(string[] args)
         {
-            var config = DefaultConfig.Instance
-                .AddJob(
-                    Job.Default.WithToolchain(
-                        CsProjCoreToolchain.From(
-                            new NetCoreAppSettings(
-                                targetFrameworkMoniker: "net5.0",  // the key to make it work
-                                runtimeFrameworkVersion: null,
-                                name: "5.0")))
-                                .AsDefault());
+            BenchmarkRunner.Run<Test>();
 
-            //BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args, config);
-            BenchmarkRunner.Run<Test>(config);
+
+            Console.ReadLine();
         }
 
 
@@ -45,49 +24,67 @@ namespace GoogleChart.Net.Wrapper.Benchmark
     [MemoryDiagnoser]
     public class Test
     {
-        Random rand = new Random(1234);
+        readonly Random rand = new Random(1234);
 
-        IEnumerable<(int, int)> xyPoints;
+        IList<(int, int)> xyPoints;
+        object t;
 
-        [Params()]
+        [Params(100, 10000, 1000000)]
         public int Size { get; set; }
 
 
         [GlobalSetup]
         public void Setup()
         {
-            xyPoints = Enumerable.Range(0, Size).Select(x => (x, rand.Next(0, 100)));
+            xyPoints = Enumerable.Range(0, Size).Select(x => (x, rand.Next(0, 100))).ToList();
+
+            t =
+                new {
+                    cols = new[]
+                    {
+                        new { id = "Column1", type = "number" },
+                        new { id = "Column2", type = "number" }
+                    },
+                    rows = xyPoints.Select(xy => new { c = new[] { new { v = xy.Item1 }, new { v = xy.Item2 } } }).ToList()
+                };
         }
 
 
 
+
+
+
+        [Benchmark(Baseline =true)]
+        public void Raw()
+        {
+            var json = System.Text.Json.JsonSerializer.Serialize(t);
+        }
+
+        
         [Benchmark]
-        public void ManuelBenchmark() => Manuel();
-
-
         public void Manuel()
         {
-            //var dt = new DataTable();
+            var dt = new DataTable();
 
-            //dt.AddColumn(new Column(ColumnType.Number));
-            //dt.AddColumn(new Column(ColumnType.Number));
+            dt.AddColumn(new Column(ColumnType.Number));
+            dt.AddColumn(new Column(ColumnType.Number));
 
-            //foreach (var point in xyPoints)
-            //{
-            //    dt.AddRow(new Cell[] { new Cell(point.Item1), new Cell(point.Item2) });
-            //}
+            foreach (var point in xyPoints)
+            {
+                dt.AddRow(new Cell[] { new Cell(point.Item1), new Cell(point.Item2) });
+            }
 
-            //var json = dt.ToJson();
+            var json = dt.ToJson();
         }
 
         [Benchmark]
         public void LinqExtension()
         {
-            //var json = xyPoints.ToDataTable(conf =>
-            //{
-            //    conf.AddColumn(new Column(ColumnType.Number), x => x.Item1);
-            //    conf.AddColumn(new Column(ColumnType.Number), x => x.Item2);
-            //});
+            var json = xyPoints.ToDataTableLinq(conf =>
+            {
+                conf.AddColumn(ColumnType.Number, x => x.Item1);
+                conf.AddColumn(ColumnType.Number, x => x.Item2);
+            }).ToJson();
         }
     }
 }
