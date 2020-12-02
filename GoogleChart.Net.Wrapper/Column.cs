@@ -31,11 +31,11 @@ namespace GoogleChart.Net.Wrapper
 
         public Column(ColumnType columnType) : this(columnType, null, null, null) { }
 
-        public Column(ColumnType columnType, string id) : this(columnType, id, null, null) { }
+        public Column(ColumnType columnType, string label) : this(columnType, null, label, null) { }
 
-        public Column(ColumnType columnType, string id, string label) : this(columnType, id, label, null) { }
+        public Column(ColumnType columnType, string label, string id) : this(columnType, label, id, null) { }
 
-        public Column(ColumnType columnType, string id, string label, ColumnRole? role)
+        public Column(ColumnType columnType, string label, string id, ColumnRole? role)
         {
             ColumnType = columnType;
             Id = id;

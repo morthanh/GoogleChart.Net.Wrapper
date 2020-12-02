@@ -21,9 +21,9 @@ namespace GoogleChart.Net.Wrapper.Extensions.Tests
             var dataTable = Enumerable.Range(0, 10).Select(x => new { Name = "Test", Value = x })
                 .ToDataTable(config =>
                 {
-                    config.AddColumn(new Column(ColumnType.String), x => new Cell(x.Name));
-                    config.AddColumn(new Column(ColumnType.Number), x => new Cell(x.Value));
-                });
+                    config.AddColumn(ColumnType.String, x => new Cell(x.Name));
+                    config.AddColumn(ColumnType.Number, x => new Cell(x.Value));
+                }).ToJson();
 
             Assert.NotNull(dataTable);
 
@@ -47,23 +47,6 @@ namespace GoogleChart.Net.Wrapper.Extensions.Tests
             Assert.AreEqual(10, jrowsElem.GetArrayLength());
         }
 
-
-        [Test]
-        public void CreateDataTable_MethodChainning_Serialized()
-        {
-
-            var dt = Enumerable.Range(0, 10).Select(x => new { Name = "Test", Value = x })
-                .ToDataTable()
-                .AddColumn(new Column(ColumnType.String), x => x.Name)
-                .AddColumn(new Column(ColumnType.Number), x => x.Value)
-                .Build();
-
-            var json = dt.ToJson();
-
-            var jelem = JsonHelper.Deserialize(json);
-            var jrowsElem = jelem.GetProperty("rows");
-            Assert.AreEqual(10, jrowsElem.GetArrayLength());
-        }
 
 
         [Test]
@@ -108,7 +91,7 @@ namespace GoogleChart.Net.Wrapper.Extensions.Tests
                 .ToList();
 
             var dt = values
-                .ToDataTableLinq(config =>
+                .ToDataTable(config =>
                 {
                     config.AddColumn(x => x.Name);
                     config.AddColumn(ColumnType.Number, x => x.Value);
@@ -120,6 +103,28 @@ namespace GoogleChart.Net.Wrapper.Extensions.Tests
             var jelem = JsonHelper.Deserialize(json);
             var jrowsElem = jelem.GetProperty("rows");
             Assert.AreEqual(10, jrowsElem.GetArrayLength());
+        }
+
+        [Test]
+        public void ToDataTableLinq_WithOptions_SerializeSubclassProperty()
+        {
+            var values = Enumerable.Range(0, 10).Select(x => new { Name = "Test", Value = x })
+                .ToList();
+
+            var dt = values
+                .ToDataTable(conf =>
+                {
+                    conf.AddColumn(ColumnType.String, x => x.Name);
+                    conf.AddColumn(x => x.Value);
+                    conf.WithOptions<LineChartOptions>(options =>
+                    {
+                        options.LineWidth = 1;
+                    });
+                });
+
+            var (dataJson, optionsJson) = dt;
+
+            Assert.IsTrue(optionsJson.Contains("lineWidth", StringComparison.OrdinalIgnoreCase));
         }
 
     }
