@@ -16,8 +16,8 @@ namespace GoogleChart.Net.Wrapper.Examples.Pages.Examples
             DataJson = Data.TestData.Data2DimWithLabels.ToDataTable(conf =>
             {
                 conf.AddColumn(x => x.Item1);
-                conf.AddColumn(new Column(ColumnType.Number, "col1", "Series 1"), x => x.Item2);
-                conf.AddColumn(new Column(ColumnType.Number, "col2", "Series 2"), x => x.Item3);
+                conf.AddColumn("Series 1", x => x.Item2);
+                conf.AddColumn("Series 2", x => x.Item3);
             }).ToJson();
 
 
@@ -27,7 +27,7 @@ namespace GoogleChart.Net.Wrapper.Examples.Pages.Examples
                 Width = 800,
                 Title = "My areachart",
                 IsStacked = StackedOption.True,
-                Legend = new LegendOptions { Position = LegendPosition.In}
+                Legend = new LegendOptions { Position = LegendPosition.In }
             };
 
             OptionsJson = options.ToJson();

@@ -3,10 +3,24 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+
+    <PackageId>GoogleChart.Net.Wrapper.Blazor</PackageId>
+    <Authors>MorthanH</Authors>
+    <Title>A Blazor component to use with GoogleChart.Net.Wrapper</Title>
+    <RepositoryUrl>https://github.com/morthanh/GoogleChart.Net.Wrapper</RepositoryUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.1.91">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

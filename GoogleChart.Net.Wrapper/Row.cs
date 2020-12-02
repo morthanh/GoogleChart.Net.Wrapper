@@ -30,15 +30,7 @@ namespace GoogleChart.Net.Wrapper
         }
 
 
-        //private void AddCell(Cell cell)
-        //{
-        //    if (cell is null)
-        //    {
-        //        throw new ArgumentNullException(nameof(cell));
-        //    }
 
-        //    Cells.Add(cell);
-        //}
 
         internal void AddCells(IEnumerable<Cell> cells)
         {
@@ -48,10 +40,6 @@ namespace GoogleChart.Net.Wrapper
             }
 
             this.cells = cells;
-            //foreach (var cell in cells)
-            //{
-            //    AddCell(cell);
-            //}
         }
 
     }

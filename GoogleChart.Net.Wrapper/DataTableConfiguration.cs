@@ -5,11 +5,14 @@ using System.Text;
 
 namespace GoogleChart.Net.Wrapper
 {
+   
     public class DataTableConfiguration<T>
     {
         private readonly IEnumerable<T> source;
-        private readonly DataTable dataTable = new DataTable();
-        private readonly List<Func<T, Cell>> valueSelectors = new List<Func<T, Cell>>();
+        private DataTable dataTable;
+        private readonly List<Func<T, object>> valueSelectors = new List<Func<T, object>>();
+        private BaseChartOptions? options = null;
+        private List<Column> columns = new List<Column>();
 
         internal DataTableConfiguration(IEnumerable<T> source)
         {
@@ -18,26 +21,7 @@ namespace GoogleChart.Net.Wrapper
 
         internal DataTable DataTable => dataTable;
 
-        public DataTableConfiguration<T> AddColumn(Column column, Func<T, Cell> valueSelector)
-        {
-            dataTable.AddColumn(column);
-            valueSelectors.Add(valueSelector);
-            return this;
-        }
 
-        public DataTableConfiguration<T> AddColumn(Column column, Func<T, object> valueSelector)
-        {
-            dataTable.AddColumn(column);
-            valueSelectors.Add(x => new Cell(valueSelector(x)));
-            return this;
-        }
-
-        public DataTableConfiguration<T> AddColumn(Func<T, object> valueSelector)
-        {
-            dataTable.AddColumn(new Column());
-            valueSelectors.Add(x => new Cell(valueSelector(x)));
-            return this;
-        }
 
         public DataTableConfiguration<T> AddColumn<TReturn>(Func<T, TReturn> valueSelector)
         {
@@ -48,83 +32,10 @@ namespace GoogleChart.Net.Wrapper
                 case TypeCode.Single:
                 case TypeCode.Double:
                 case TypeCode.Int32:
-                    dataTable.AddColumn(new Column(ColumnType.Number));
+                    columns.Add(new Column(ColumnType.Number));
                     break;
                 case TypeCode.String:
-                    dataTable.AddColumn(new Column(ColumnType.String));
-                    break;
-                default:
-                    throw new NotSupportedException($"Returtype '{returnTypeCode}' is not yet supported");
-            }
-
-            valueSelectors.Add((c) => new Cell(valueSelector(c)));
-            return this;
-        }
-
-        public DataTableConfiguration<T> AddColumn(ColumnType columnType, Func<T, object> valueSelector)
-        {
-            dataTable.AddColumn(new Column(columnType));
-            valueSelectors.Add(x => new Cell(valueSelector(x)));
-            return this;
-        }
-
-        public DataTableConfiguration<T> AddColumn(ColumnType columnType, string id, Func<T, object> valueSelector)
-        {
-            dataTable.AddColumn(new Column(columnType, id));
-            valueSelectors.Add(x => new Cell(valueSelector(x)));
-            return this;
-        }
-
-        public DataTableConfiguration<T> AddColumn(ColumnType columnType, string id, string label, Func<T, object> valueSelector)
-        {
-            dataTable.AddColumn(new Column(columnType, id, label));
-            valueSelectors.Add(x => new Cell(valueSelector(x)));
-            return this;
-        }
-
-
-        public DataTable Build()
-        {
-
-            var r = new Row(dataTable);
-            dataTable.AddRowsSource(source.Select(x =>
-            {
-                r.Cells = valueSelectors.Select(f => f(x));
-                return r;
-            }));
-
-            return dataTable;
-        }
-
-    }
-    public class DataTableLinqConfiguration<T>
-    {
-        private readonly IEnumerable<T> source;
-        private readonly DataTableLinq dataTable = new DataTableLinq();
-        private readonly List<Func<T, object>> valueSelectors = new List<Func<T, object>>();
-
-        internal DataTableLinqConfiguration(IEnumerable<T> source)
-        {
-            this.source = source;
-        }
-
-        internal DataTableLinq DataTable => dataTable;
-
-
-
-        public DataTableLinqConfiguration<T> AddColumn<TReturn>(Func<T, TReturn> valueSelector)
-        {
-            var returnTypeCode = Type.GetTypeCode(typeof(TReturn));
-
-            switch (returnTypeCode)
-            {
-                case TypeCode.Single:
-                case TypeCode.Double:
-                case TypeCode.Int32:
-                    dataTable.AddColumn(new Column(ColumnType.Number));
-                    break;
-                case TypeCode.String:
-                    dataTable.AddColumn(new Column(ColumnType.String));
+                    columns.Add(new Column(ColumnType.String));
                     break;
                 default:
                     throw new NotSupportedException($"Returtype '{returnTypeCode}' is not yet supported");
@@ -134,28 +45,68 @@ namespace GoogleChart.Net.Wrapper
             return this;
         }
 
-
-
-
-        public DataTableLinqConfiguration<T> AddColumn(ColumnType columnType, Func<T, object> valueSelector)
+        public DataTableConfiguration<T> AddColumn<TReturn>(string label, Func<T, TReturn> valueSelector)
         {
-            dataTable.AddColumn(new Column(columnType));
-            valueSelectors.Add(x => valueSelector(x));
+            var returnTypeCode = Type.GetTypeCode(typeof(TReturn));
+
+            switch (returnTypeCode)
+            {
+                case TypeCode.Single:
+                case TypeCode.Double:
+                case TypeCode.Int32:
+                    columns.Add(new Column(ColumnType.Number, label));
+                    break;
+                case TypeCode.String:
+                    columns.Add(new Column(ColumnType.String, label));
+                    break;
+                default:
+                    throw new NotSupportedException($"Returtype '{returnTypeCode}' is not yet supported");
+            }
+
+            valueSelectors.Add((c) => valueSelector(c));
+            return this;
+        }
+
+        public DataTableConfiguration<T> WithOptions<TOptions>(Action<TOptions> optionsAction) where TOptions : BaseChartOptions
+        {
+            var option = Activator.CreateInstance(typeof(TOptions)) as TOptions;
+            optionsAction(option);
+            options = option;
             return this;
         }
 
 
 
-        public DataTableLinq Build()
+
+        public DataTableConfiguration<T> AddColumn(Column column, Func<T, object> valueSelector)
         {
-            dataTable.ValuesSource = ValueSourceEnumerator();
+            columns.Add(column);
+            valueSelectors.Add(x => valueSelector(x));
+            return this;
+        }
+        public DataTableConfiguration<T> AddColumn(ColumnType columnType, Func<T, object> valueSelector)
+        {
+            return AddColumn(new Column(columnType), valueSelector);
+        }
+
+
+
+
+        public DataTable Build()
+        {
+            dataTable = new DataTable(ValueSourceEnumerator());
+            dataTable.Options = options;
+            foreach (var column in columns)
+            {
+                dataTable.AddColumn(column);
+            }
             return dataTable;
         }
 
         private IEnumerable<object> ValueSourceEnumerator()
         {
             int cIdx;
-            foreach(var elem in source)
+            foreach (var elem in source)
             {
                 for (cIdx = 0; cIdx < valueSelectors.Count; cIdx++)
                 {

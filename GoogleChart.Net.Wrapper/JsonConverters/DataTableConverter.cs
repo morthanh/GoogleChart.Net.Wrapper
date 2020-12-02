@@ -5,19 +5,16 @@ using System.Text.Json.Serialization;
 
 namespace GoogleChart.Net.Wrapper.JsonConverters
 {
-    public sealed class DataTableLinqConverter : JsonConverter<DataTableLinq>
+    public sealed class DataTableConverter : JsonConverter<DataTable>
     {
 
-        JsonStringEnumConverter enumCamelCaseConverterFactory = new JsonStringEnumConverter(namingPolicy: JsonNamingPolicy.CamelCase, false);
 
-
-
-        public override DataTableLinq Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override DataTable Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             throw new NotImplementedException();
         }
 
-        public override void Write(Utf8JsonWriter writer, DataTableLinq dt, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, DataTable dt, JsonSerializerOptions options)
         {
 
             writer.WriteStartObject();
@@ -45,25 +42,51 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
             writer.WriteStartArray("rows");
 
 
-            foreach(var val in valuesSource)
+            foreach (var val in valuesSource)
             {
-                if (i % numColumns == 0)
+                if (val is Row row)
                 {
+                    foreach(var cell in row.Cells)
+                    {
+                        if (i % numColumns == 0)
+                        {
+                            writer.WriteStartObject();
+                            writer.WriteStartArray("c");
+                        }
+
+                        writer.WriteStartObject();
+                        WriteValue(cell, columnTypes[i % numColumns], writer, false);
+                        writer.WriteEndObject();
+
+                        if (i % numColumns == numColumns - 1)
+                        {
+                            writer.WriteEndArray();
+                            writer.WriteEndObject();
+                        }
+
+                        i++;
+                    }
+                }
+                else
+                {
+                    if (i % numColumns == 0)
+                    {
+                        writer.WriteStartObject();
+                        writer.WriteStartArray("c");
+                    }
+
                     writer.WriteStartObject();
-                    writer.WriteStartArray("c");
-                }
-
-                writer.WriteStartObject();
-                WriteValue(val, columnTypes[i % numColumns], writer, false);
-                writer.WriteEndObject();
-
-                if (i % numColumns == numColumns - 1)
-                {
-                    writer.WriteEndArray();
+                    WriteValue(val, columnTypes[i % numColumns], writer, false);
                     writer.WriteEndObject();
-                }
 
-                i++;
+                    if (i % numColumns == numColumns - 1)
+                    {
+                        writer.WriteEndArray();
+                        writer.WriteEndObject();
+                    }
+
+                    i++;
+                }
             }
 
             writer.WriteEndArray();
@@ -75,6 +98,10 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
             if (isLabels)
             {
                 writer.WriteString("v", v.ToString());
+            }
+            else if (v is Cell cell)
+            {
+                cell.WriteValue(columnType, writer, isLabels);
             }
             else
             {

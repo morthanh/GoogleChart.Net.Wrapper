@@ -80,7 +80,7 @@ namespace GoogleChart.Net.Wrapper.Benchmark
         [Benchmark]
         public void LinqExtension()
         {
-            var json = xyPoints.ToDataTableLinq(conf =>
+            var json = xyPoints.ToDataTable(conf =>
             {
                 conf.AddColumn(ColumnType.Number, x => x.Item1);
                 conf.AddColumn(ColumnType.Number, x => x.Item2);

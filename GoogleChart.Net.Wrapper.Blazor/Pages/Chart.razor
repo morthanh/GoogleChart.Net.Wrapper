@@ -20,7 +20,7 @@
         string dataJson = DataTable.ToJson();
         string optionJson = Options?.ToJson();
 
-        return JS.InvokeVoidAsync("window.GoogleChart.Draw", "LineChart", ElemId, dataJson, optionJson).AsTask();
+        return JS.InvokeVoidAsync("window.GoogleChart.Draw", ChartType.ToString(), ElemId, dataJson, optionJson).AsTask();
 
 
 
