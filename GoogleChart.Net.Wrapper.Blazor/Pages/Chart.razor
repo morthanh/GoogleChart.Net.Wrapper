@@ -8,20 +8,26 @@
 
     private string ElemId { get; set; }
 
+    private string dataJson;
+
+    private string optionsJson;
+
     protected override void OnInitialized()
     {
         ElemId = Guid.NewGuid().ToString();
+    }
+
+    protected override void OnParametersSet()
+    {
+        dataJson = DataTable.ToJson();
+        optionsJson = Options.ToJson();
     }
 
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
 
-        string dataJson = DataTable?.ToJson();
-        string optionJson = Options?.ToJson();
-
-        return JS.InvokeVoidAsync("window.GoogleChart.Draw", ChartType.ToString(), ElemId, dataJson, optionJson).AsTask();
-
+        return JS.InvokeVoidAsync("window.GoogleChart.Draw", ChartType.ToString(), ElemId, dataJson, optionsJson).AsTask();
 
 
     }

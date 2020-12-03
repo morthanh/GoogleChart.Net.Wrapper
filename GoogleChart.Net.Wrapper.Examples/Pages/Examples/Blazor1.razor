@@ -8,6 +8,24 @@
 
     protected override void OnInitialized()
     {
+
+        UpdateDataTable();
+
+        StateHasChanged();
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+
+    }
+
+    private void UpdateDataTable()
+    {
         int i = 0;
         MyDataTable = Data.TestData.Data2DimRandom.ToDataTable(conf =>
         {
@@ -17,8 +35,16 @@
         });
 
         MyOptions = new LineChartOptions { Height = 200, Width = 500, Title = "Line chart with Blazor component from different assembly" };
+
+    }
+
+    private void Update()
+    {
+        UpdateDataTable();
+        StateHasChanged();
     }
 }
 
 <Chart ChartType="ChartType.LineChart" DataTable="MyDataTable" Options="MyOptions"></Chart>
 
+<button @onclick="Update">Update</button>
