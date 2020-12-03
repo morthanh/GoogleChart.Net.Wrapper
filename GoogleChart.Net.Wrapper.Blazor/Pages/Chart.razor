@@ -17,7 +17,7 @@
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
 
-        string dataJson = DataTable.ToJson();
+        string dataJson = DataTable?.ToJson();
         string optionJson = Options?.ToJson();
 
         return JS.InvokeVoidAsync("window.GoogleChart.Draw", ChartType.ToString(), ElemId, dataJson, optionJson).AsTask();
