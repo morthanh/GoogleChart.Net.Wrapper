@@ -1,0 +1,90 @@
+﻿@page
+@model GoogleChart.Net.Wrapper.Examples.Pages.Examples.Table3Model
+@{
+}
+
+
+<div class="card mb-4">
+    <h5 class="card-header">Table 2 Example</h5>
+    <div class="card-body">
+        <div id="chartDiv"></div>
+    </div>
+</div>
+
+<div class="card-deck">
+    <div class="card">
+        <h5 class="card-header">C#</h5>
+        <div class="card-body">
+            <pre><code>
+var data = Data.TestData.Data2DimWithLabels.ToDataTable(conf =>
+{
+    conf.AddColumn("Name", x => x.Item1);
+    conf.AddColumn("Value 1", x => x.Item2);
+    conf.AddColumn("Value 2", x => x.Item3);
+    conf.WithOptions<TableChartOptions>(options =>
+    {
+        options.Width = UnitSize.Percent(100);
+        options.Height = 300;
+        options.CssClassNames = new TableCssClassNames
+        {
+            OddTableRow = "text-danger",
+            HeaderRow = "bg-dark"
+        };
+    });
+});
+
+DataJson = data.ToJson();
+
+(DataJson, OptionsJson) = data;
+            </code></pre>
+        </div>
+    </div>
+
+    <div class="card">
+        <h5 class="card-header">Javascript</h5>
+        <div class="card-body">
+            <pre><code>
+// Load the Visualization API and the corechart package.
+google.charts.load('current', { 'packages': ['table'] });
+
+// Set a callback to run when the Google Visualization API is loaded.
+google.charts.setOnLoadCallback(drawChart);
+
+// Callback that creates and populates a data table,
+// instantiates the pie chart, passes in the data and
+// draws it.
+function drawChart() {
+
+    // Create the data table.
+    var data = new google.visualization.DataTable('@@Html.Raw(Model.DataJson)');
+
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.Table(document.getElementById('chartDiv'));
+    chart.draw(data, @@Html.Raw(Model.OptionsJson));
+}
+                </code>
+            </pre>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Load the Visualization API and the corechart package.
+    google.charts.load('current', { 'packages': ['table'] });
+
+    // Set a callback to run when the Google Visualization API is loaded.
+    google.charts.setOnLoadCallback(drawChart);
+
+    // Callback that creates and populates a data table,
+    // instantiates the pie chart, passes in the data and
+    // draws it.
+    function drawChart() {
+
+        // Create the data table.
+        var data = new google.visualization.DataTable('@Html.Raw(Model.DataJson)');
+
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.Table(document.getElementById('chartDiv'));
+        chart.draw(data, @Html.Raw(Model.OptionsJson));
+    }
+</script>

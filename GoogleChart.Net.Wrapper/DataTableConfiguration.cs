@@ -11,7 +11,7 @@ namespace GoogleChart.Net.Wrapper
         private readonly IEnumerable<T> source;
         private DataTable dataTable;
         private readonly List<Func<T, object>> valueSelectors = new List<Func<T, object>>();
-        private BaseChartOptions? options = null;
+        private ChartOptions? options = null;
         private List<Column> columns = new List<Column>();
 
         internal DataTableConfiguration(IEnumerable<T> source)
@@ -67,7 +67,7 @@ namespace GoogleChart.Net.Wrapper
             return this;
         }
 
-        public DataTableConfiguration<T> WithOptions<TOptions>(Action<TOptions> optionsAction) where TOptions : BaseChartOptions
+        public DataTableConfiguration<T> WithOptions<TOptions>(Action<TOptions> optionsAction) where TOptions : ChartOptions
         {
             var option = Activator.CreateInstance(typeof(TOptions)) as TOptions;
             optionsAction(option);
@@ -94,8 +94,7 @@ namespace GoogleChart.Net.Wrapper
 
         public DataTable Build()
         {
-            dataTable = new DataTable(ValueSourceEnumerator());
-            dataTable.Options = options;
+            dataTable = new DataTable(ValueSourceEnumerator()) { Options = options };
             foreach (var column in columns)
             {
                 dataTable.AddColumn(column);

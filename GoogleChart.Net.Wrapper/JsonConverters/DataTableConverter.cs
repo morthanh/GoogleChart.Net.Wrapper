@@ -5,6 +5,55 @@ using System.Text.Json.Serialization;
 
 namespace GoogleChart.Net.Wrapper.JsonConverters
 {
+
+    public sealed class CharBackgroundColorConverter : JsonConverter<ChartBackgroundColor>
+    {
+        public override ChartBackgroundColor? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(Utf8JsonWriter writer, ChartBackgroundColor chartBackgroundColor, JsonSerializerOptions options)
+        {
+            if (!string.IsNullOrEmpty(chartBackgroundColor.Value))
+            {
+                writer.WriteStringValue(chartBackgroundColor.Value);
+            }
+            else
+            {
+                JsonSerializer.Serialize(writer, chartBackgroundColor, typeof(ChartBackgroundColor), options);
+            }
+        }
+    }
+
+    public sealed class UnitSizeConverter : JsonConverter<UnitSize>
+    {
+        public override UnitSize? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(Utf8JsonWriter writer, UnitSize unitSize, JsonSerializerOptions options)
+        {
+            if (unitSize.Parent is LineChartOptions)
+            {
+                if (!int.TryParse( unitSize.Value, out var pixels)){
+                    throw new Exception("For a line chart the width and height needs to be integer values");
+                }
+                writer.WriteNumberValue(pixels);
+
+            }
+            else if (unitSize.Parent is TableChartOptions)
+            {
+                writer.WriteStringValue(unitSize.Value);
+            }
+            else
+            {
+                writer.WriteStringValue(unitSize.Value);
+            }
+        }
+    }
+
     public sealed class DataTableConverter : JsonConverter<DataTable>
     {
 

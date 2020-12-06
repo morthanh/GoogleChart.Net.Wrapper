@@ -1,13 +1,16 @@
 ﻿@page "/Examples/Blazor1"
+@inject IJSRuntime JS
 @using GoogleChart.Net.Wrapper.Extensions
 @code {
 
     private DataTable MyDataTable { get; set; }
-
-    private BaseChartOptions MyOptions { get; set; }
+    private ChartOptions MyOptions { get; set; }
+    private ChartType ChartType { get; set; } = ChartType.LineChart;
+    private IEnumerable<(int Index, int Val1, int Val2)> dataPoints;
 
     protected override void OnInitialized()
     {
+        UpdateData();
 
         UpdateDataTable();
 
@@ -19,32 +22,114 @@
         base.OnParametersSet();
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    private void UpdateData()
     {
-
+        dataPoints = Data.TestData.Data2DimRandom.Select((x, i) => (i, x.Item1, x.Item2)).ToList();
     }
 
     private void UpdateDataTable()
     {
-        int i = 0;
-        MyDataTable = Data.TestData.Data2DimRandom.ToDataTable(conf =>
+        MyDataTable = dataPoints.ToDataTable(conf =>
         {
-            conf.AddColumn(_ => i++);
-            conf.AddColumn(x => x.Item1);
-            conf.AddColumn(x => x.Item2);
+            conf.AddColumn("Index", x => x.Index);
+            conf.AddColumn("Value 1", x => x.Val1);
+            conf.AddColumn("Value 2", x => x.Val2);
         });
 
-        MyOptions = new LineChartOptions { Height = 200, Width = 500, Title = "Line chart with Blazor component from different assembly" };
+        MyOptions = ChartType == ChartType.LineChart ?
+            new LineChartOptions { Height = 300, Width = 600, Title = "Line chart using Blazor component" } :
+            new TableChartOptions { Height = 300, Width = UnitSize.Percent(100) };
 
     }
 
-    private void Update()
+    private void UpdateOnClick()
     {
+        UpdateData();
         UpdateDataTable();
-        StateHasChanged();
+    }
+
+    private void ChangeChartOnclick()
+    {
+        if (ChartType == ChartType.LineChart)
+            ChartType = ChartType.Table;
+        else
+            ChartType = ChartType.LineChart;
+        UpdateDataTable();
     }
 }
 
-<Chart ChartType="ChartType.LineChart" DataTable="MyDataTable" Options="MyOptions"></Chart>
+<div class="card mb-4">
+    <h5 class="card-header">Blazor 1 Example</h5>
+    <div class="card-body">
+        <Chart ChartType="ChartType" DataTable="MyDataTable" Options="MyOptions"></Chart>
 
-<button @onclick="Update">Update</button>
+        <button class="btn btn-primary" @onclick="UpdateOnClick">Update</button>
+        <button class="btn btn-primary" @onclick="ChangeChartOnclick">Change Chart</button>
+    </div>
+</div>
+
+<div class="card">
+    <h5 class="card-header">Code behind</h5>
+    <div class="card-body">
+        <pre><code class="csharp" id="codeblock">
+@@page "/Examples/Blazor1"
+@@using GoogleChart.Net.Wrapper.Extensions
+@@code {
+
+    private DataTable MyDataTable { get; set; }
+    private ChartOptions MyOptions { get; set; }
+    private ChartType ChartType { get; set; } = ChartType.LineChart;
+    private IEnumerable&lt;(int Index, int Val1, int Val2)&gt; dataPoints;
+
+    protected override void OnInitialized()
+    {
+        UpdateData();
+
+        UpdateDataTable();
+
+        StateHasChanged();
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+    }
+
+    private void UpdateData()
+    {
+        dataPoints = Data.TestData.Data2DimRandom.Select((x, i) => (i, x.Item1, x.Item2)).ToList();
+    }
+
+    private void UpdateDataTable()
+    {
+        MyDataTable = dataPoints.ToDataTable(conf =>
+        {
+            conf.AddColumn("Index", x => x.Index);
+            conf.AddColumn("Value 1", x => x.Val1);
+            conf.AddColumn("Value 2", x => x.Val2);
+        });
+
+        MyOptions = ChartType == ChartType.LineChart ?
+            new LineChartOptions { Height = 300, Width = 600, Title = "Line chart using Blazor component" } :
+            new TableChartOptions { Height = 300, Width = UnitSize.Percent(100), Title = "Table chart with Blazor component from different assembly" };
+
+    }
+
+    private void UpdateOnClick()
+    {
+        UpdateData();
+        UpdateDataTable();
+    }
+
+    private void ChangeChartOnclick()
+    {
+        if (ChartType == ChartType.LineChart)
+            ChartType = ChartType.Table;
+        else
+            ChartType = ChartType.LineChart;
+        UpdateDataTable();
+    }
+}
+            </code></pre>
+    </div>
+</div>

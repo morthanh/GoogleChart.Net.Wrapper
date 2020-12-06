@@ -14,6 +14,10 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.1/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.1/highlight.min.js"></script>
+
     <base href="~/" />
 </head>
 <body>
@@ -37,9 +41,7 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
-            <div class="row">
-                @RenderBody()
-            </div>
+            @RenderBody()
         </main>
     </div>
 
@@ -52,5 +54,7 @@
 
 
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>hljs.initHighlightingOnLoad();</script>
 </body>
 </html>

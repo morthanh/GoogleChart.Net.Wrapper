@@ -13,4 +13,16 @@
     <ProjectReference Include="..\GoogleChart.Net.Wrapper\GoogleChart.Net.Wrapper.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Pages\Examples\Table1 - Copy %282%29.cshtml.cs">
+      <DependentUpon>Table1.cshtml.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Pages\Examples\Table1 - Copy - Copy.cshtml.cs">
+      <DependentUpon>Table1 - Copy.cshtml.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Pages\Examples\Table1 - Copy.cshtml.cs">
+      <DependentUpon>Table1.cshtml.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
 </Project>

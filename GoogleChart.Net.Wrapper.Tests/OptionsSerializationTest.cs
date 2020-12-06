@@ -18,7 +18,7 @@ namespace GoogleChart.Net.Wrapper.Tests
         [Test]
         public void BaseChartOptions_Serialize()
         {
-            var opt = new BaseChartOptions
+            var opt = new ChartOptions
             {
                 Title = "Hello word",
                 TitlePosition = TitlePosition.In,
