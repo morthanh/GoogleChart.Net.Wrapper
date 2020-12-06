@@ -16,13 +16,10 @@ namespace GoogleChart.Net.Wrapper.Tests
     {
 
         [Test]
-        public void BaseChartOptions_Serialize()
+        public void ChartOptions_Serialize()
         {
             var opt = new ChartOptions
             {
-                Title = "Hello word",
-                TitlePosition = TitlePosition.In,
-                AxisTitlesPosition = AxisTitlesPosition.Out,
                 Height = 200,
                 Width = 500
             };
