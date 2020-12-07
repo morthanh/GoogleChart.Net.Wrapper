@@ -13,21 +13,20 @@ namespace GoogleChart.Net.Wrapper.Examples.Pages.Examples
         public void OnGet()
         {
 
-            var dt = Data.TestData.Data1DimWithLabels.Take(1).ToDataTable(conf =>
+            var dt = Data.TestData.Data1DimWithLabels.Take(3).ToDataTable(conf =>
             {
-                //conf.AddColumnLabels("Label", "Value");
                 conf.AddColumn(x => x.Item1);
                 conf.AddColumn(x => x.Item2);
                 conf.WithOptions<GaugeOptions>(options =>
                 {
-
                     options.GreenFrom = 10;
                     options.GreenTo = 40;
                     options.Max = 50;
                     options.Min = 0;
+                    options.MajorTicks = new string[] {"0s", "10s", "20s", "30s", "40s", "50s" };
+                    options.MinorTicks = 10;
                 });
             });
-
 
             (DataJson, OptionsJson) = dt;
 
