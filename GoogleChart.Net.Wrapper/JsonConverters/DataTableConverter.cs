@@ -66,6 +66,12 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
         public override void Write(Utf8JsonWriter writer, DataTable dt, JsonSerializerOptions options)
         {
 
+            if (dt.ColumnLabels != null  && dt.Columns.Count != dt.ColumnLabels.Count)
+            {
+                throw new Exception("Number of column labels does not equal number of columns");
+            }
+
+
             writer.WriteStartObject();
 
             //write cols
@@ -74,7 +80,7 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
 
 
             //write rows
-            WriteRows(writer, dt.ValuesSource, dt.ColumnTypes);
+            WriteRows(writer, dt.ValuesSource, dt.ColumnTypes, dt.ColumnLabels);
 
 
             writer.WriteEndObject();
@@ -82,7 +88,7 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
 
 
 
-        private void WriteRows(Utf8JsonWriter writer, IEnumerable<object> valuesSource, IList<ColumnType> columnTypes)
+        private void WriteRows(Utf8JsonWriter writer, IEnumerable<object> valuesSource, IList<ColumnType> columnTypes, IList<string> columnLabels)
         {
             int i = 0;
             int numColumns = columnTypes.Count;
@@ -90,6 +96,21 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
 
             writer.WriteStartArray("rows");
 
+            if (columnLabels?.Count > 0)
+            {
+                writer.WriteStartObject();
+                writer.WriteStartArray("c");
+
+                foreach(var label in columnLabels)
+                {
+                    writer.WriteStartObject();
+                    WriteValue(label, columnTypes[i % numColumns], writer, true);
+                    writer.WriteEndObject();
+                }
+
+                writer.WriteEndArray();
+                writer.WriteEndObject();
+            }
 
             foreach (var val in valuesSource)
             {
@@ -142,15 +163,15 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
 
         }
 
-        internal void WriteValue(object v, ColumnType columnType, Utf8JsonWriter writer, bool isLabels)
+        internal void WriteValue(object v, ColumnType columnType, Utf8JsonWriter writer, bool isLabel)
         {
-            if (isLabels)
+            if (isLabel)
             {
                 writer.WriteString("v", v.ToString());
             }
             else if (v is Cell cell)
             {
-                cell.WriteValue(columnType, writer, isLabels);
+                cell.WriteValue(columnType, writer, isLabel);
             }
             else
             {
