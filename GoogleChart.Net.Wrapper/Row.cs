@@ -31,7 +31,7 @@ namespace GoogleChart.Net.Wrapper
 
 
 
-
+        
         internal void AddCells(IEnumerable<Cell> cells)
         {
             if (cells is null)

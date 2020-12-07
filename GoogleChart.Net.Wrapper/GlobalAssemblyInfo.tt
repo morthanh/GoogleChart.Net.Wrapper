@@ -1,0 +1,11 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ output extension=".cs" #>
+<#
+var buildFile = this.Host.ResolvePath("..\\build.txt");
+var buildStr = System.IO.File.ReadAllText(buildFile);
+var build = System.String.IsNullOrEmpty(buildStr) ? "0" : (int.Parse(buildStr)+1).ToString();
+System.IO.File.WriteAllText(buildFile, build);
+#>
+using System.Reflection;
+[assembly: AssemblyVersion("0.2.0.0")]
+[assembly: AssemblyFileVersion("0.2.<#=build#>")] 

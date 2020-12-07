@@ -12,7 +12,8 @@ namespace GoogleChart.Net.Wrapper
         private DataTable dataTable;
         private readonly List<Func<T, object>> valueSelectors = new List<Func<T, object>>();
         private ChartOptions? options = null;
-        private List<Column> columns = new List<Column>();
+        private readonly List<Column> columns = new List<Column>();
+        private List<string> columnlabels;
 
         internal DataTableConfiguration(IEnumerable<T> source)
         {
@@ -22,6 +23,12 @@ namespace GoogleChart.Net.Wrapper
         internal DataTable DataTable => dataTable;
 
 
+
+        public DataTableConfiguration<T> AddColumnLabels(params string[] colLabels)
+        {
+            columnlabels = colLabels.ToList();
+            return this;
+        }
 
         public DataTableConfiguration<T> AddColumn<TReturn>(Func<T, TReturn> valueSelector)
         {
@@ -94,7 +101,7 @@ namespace GoogleChart.Net.Wrapper
 
         public DataTable Build()
         {
-            dataTable = new DataTable(ValueSourceEnumerator()) { Options = options };
+            dataTable = new DataTable(ValueSourceEnumerator()) { Options = options, ColumnLabels = columnlabels };
             foreach (var column in columns)
             {
                 dataTable.AddColumn(column);
