@@ -25,6 +25,51 @@ namespace GoogleChart.Net.Wrapper
         }
     }
 
+    public class GaugeOptions : ChartOptions
+    {
+        public string? GreenColor { get; set; }
+
+        public double? GreenFrom { get; set; }
+
+        public double? GreenTo { get; set; }
+
+        public double? Max { get; set; }
+
+        public double? Min { get; set; }
+
+        public IEnumerable<string>? MajorTicks { get; set; }
+
+        public int MinorTicks { get; set; }
+
+        public string? RedColor { get; set; }
+
+        public double? RedFrom { get; set; }
+
+        public double? RedTo { get; set; }
+
+        public string? YellowColor { get; set; }
+
+        public double? YellowFrom { get; set; }
+
+        public double? YellowTo { get; set; }
+
+    }
+
+    public class GaugeAnimation
+    {
+        public double? Duration { get; set; }
+
+        public GaugeAnimationFunction? Easing { get; set; }
+    }
+
+    public enum GaugeAnimationFunction
+    {
+        Linear,
+        In,
+        Out,
+        InAndOut
+    }
+
     public class AxisChartOptions : ChartOptions
     {
 

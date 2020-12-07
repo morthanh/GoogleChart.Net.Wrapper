@@ -6,6 +6,10 @@
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs" Link="GlobalAssemblyInfo.cs" />
+  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.12.1.1420" />

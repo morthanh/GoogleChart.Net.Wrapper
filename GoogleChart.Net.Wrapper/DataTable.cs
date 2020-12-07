@@ -8,14 +8,17 @@ using System.Text.Json.Serialization;
 
 namespace GoogleChart.Net.Wrapper
 {
-
+    /// <summary>
+    /// Holds all columns, row values, and options used by Google Chart Javascript Api. 
+    /// </summary>
     [JsonConverter(typeof(DataTableConverter))]
     public class DataTable
     {
         private readonly bool useLinq;
         private readonly List<Row> rows;
 
-        public DataTable() {
+        public DataTable()
+        {
             rows = new List<Row>();
             ValuesSource = rows.AsEnumerable();
             useLinq = false;
@@ -41,6 +44,8 @@ namespace GoogleChart.Net.Wrapper
 
         [JsonIgnore]
         internal bool UseLinq => useLinq;
+
+        internal List<string> ColumnLabels { get; set; }
 
 
         /// <summary>
@@ -70,6 +75,11 @@ namespace GoogleChart.Net.Wrapper
         public void AddColumn(ColumnType columnType, string label)
         {
             AddColumn(new Column(columnType, label));
+        }
+
+        public void AddColumnLabels(IEnumerable<string> labels)
+        {
+            ColumnLabels = labels.ToList();
         }
 
 
