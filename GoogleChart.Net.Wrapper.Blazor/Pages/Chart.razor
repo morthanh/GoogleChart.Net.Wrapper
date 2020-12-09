@@ -2,15 +2,15 @@
 @code{
     [Parameter] public ChartType ChartType { get; set; }
 
-    [Parameter] public DataTable DataTable { get; set; }
-
-    [Parameter] public ChartOptions Options { get; set; }
+    [Parameter] public DataTable ChartDataTable { get; set; }
 
     private string ElemId { get; set; }
 
     private string dataJson;
 
     private string optionsJson;
+
+    private bool SetValueMethodCalled;
 
     protected override void OnInitialized()
     {
@@ -19,17 +19,29 @@
 
     protected override void OnParametersSet()
     {
-        dataJson = DataTable.ToJson();
-        optionsJson = Options.ToJson();
+        (dataJson, optionsJson) = ChartDataTable;
     }
-
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
-
         return JS.InvokeVoidAsync("window.GoogleChart.Draw", ChartType.ToString(), ElemId, dataJson, optionsJson).AsTask();
-
-
     }
+
+    protected override bool ShouldRender()
+    {
+        if (SetValueMethodCalled)
+        {
+            SetValueMethodCalled = false;
+            return false;
+        }
+        return base.ShouldRender();
+    }
+
+    public Task SetValueAsync(int row, int column, object value)
+    {
+        SetValueMethodCalled = true;
+        return JS.InvokeVoidAsync("window.GoogleChart.SetValue", ElemId, row, column, value).AsTask();
+    }
+
 }
 <div id="@ElemId"></div>

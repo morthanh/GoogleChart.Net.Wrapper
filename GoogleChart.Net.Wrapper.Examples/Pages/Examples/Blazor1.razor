@@ -1,10 +1,8 @@
 ﻿@page "/Examples/Blazor1"
-@inject IJSRuntime JS
 @using GoogleChart.Net.Wrapper.Extensions
 @code {
 
     private DataTable MyDataTable { get; set; }
-    private ChartOptions MyOptions { get; set; }
     private ChartType ChartType { get; set; } = ChartType.LineChart;
     private IEnumerable<(int Index, int Val1, int Val2)> dataPoints;
 
@@ -36,7 +34,7 @@
             conf.AddColumn("Value 2", x => x.Val2);
         });
 
-        MyOptions = ChartType == ChartType.LineChart ?
+        MyDataTable.Options = ChartType == ChartType.LineChart ?
             new LineChartOptions { Height = 300, Width = 600, Title = "Line chart using Blazor component" } :
             new TableChartOptions { Height = 300, Width = UnitSize.Percent(100) };
 
@@ -61,7 +59,7 @@
 <div class="card mb-4">
     <h5 class="card-header">Blazor 1 Example</h5>
     <div class="card-body">
-        <Chart ChartType="ChartType" DataTable="MyDataTable" Options="MyOptions"></Chart>
+        <Chart ChartType="ChartType" ChartDataTable="MyDataTable"></Chart>
 
         <button class="btn btn-primary" @onclick="UpdateOnClick">Update</button>
         <button class="btn btn-primary" @onclick="ChangeChartOnclick">Change Chart</button>

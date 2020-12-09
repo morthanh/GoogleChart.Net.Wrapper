@@ -40,7 +40,7 @@ namespace GoogleChart.Net.Wrapper
         internal IEnumerable<object> ValuesSource { get; }
 
         [JsonIgnore]
-        internal ChartOptions? Options { get; set; }
+        public ChartOptions? Options { get; set; }
 
         [JsonIgnore]
         internal bool UseLinq => useLinq;

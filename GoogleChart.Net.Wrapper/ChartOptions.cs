@@ -27,6 +27,8 @@ namespace GoogleChart.Net.Wrapper
 
     public class GaugeOptions : ChartOptions
     {
+        public GaugeAnimation Animation { get; set; }
+
         public string? GreenColor { get; set; }
 
         public double? GreenFrom { get; set; }
@@ -79,31 +81,31 @@ namespace GoogleChart.Net.Wrapper
         [JsonStringEnumCamelCaseConverter]
         public AxisTitlesPosition? AxisTitlesPosition { get; set; }
 
-        public LegendOptions Legend { get; set; }
+        public LegendOptions? Legend { get; set; }
 
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [JsonConverter(typeof(CharBackgroundColorConverter))]
-        public ChartBackgroundColor BackgroundColor { get; set; }
+        public ChartBackgroundColor? BackgroundColor { get; set; }
 
-        public ChartArea ChartArea { get; set; }
+        public ChartArea? ChartArea { get; set; }
 
-        public Crosshair Crosshair { get; set; }
+        public Crosshair? Crosshair { get; set; }
 
     }
 
     public sealed class ChartArea
     {
         [JsonConverter(typeof(CharBackgroundColorConverter))]
-        public ChartBackgroundColor BackgroundColor { get; set; }
+        public ChartBackgroundColor? BackgroundColor { get; set; }
         [JsonConverter(typeof(UnitSizeConverter))]
-        public UnitSize Left { get; set; }
+        public UnitSize? Left { get; set; }
         [JsonConverter(typeof(UnitSizeConverter))]
-        public UnitSize Top { get; set; }
+        public UnitSize? Top { get; set; }
         [JsonConverter(typeof(UnitSizeConverter))]
-        public UnitSize Width { get; set; }
+        public UnitSize? Width { get; set; }
         [JsonConverter(typeof(UnitSizeConverter))]
-        public UnitSize Height { get; set; }
+        public UnitSize? Height { get; set; }
     }
 
     public sealed class ChartBackgroundColor
@@ -260,7 +262,7 @@ namespace GoogleChart.Net.Wrapper
     {
         public bool? AlternatingRowStyle { get; set; }
 
-        public TableCssClassNames CssClassNames { get; set; }
+        public TableCssClassNames? CssClassNames { get; set; }
 
         public int? FirstRowNumber { get; set; }
 
