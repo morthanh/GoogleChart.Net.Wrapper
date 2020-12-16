@@ -1,17 +1,20 @@
 ﻿using GoogleChart.Net.Wrapper.JsonConverters;
+using GoogleChart.Net.Wrapper.Options;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace GoogleChart.Net.Wrapper
 {
     /// <summary>
     /// Holds all columns, row values, and options used by Google Chart Javascript Api. 
     /// </summary>
-    [JsonConverter(typeof(DataTableConverter))]
+    [JsonConverter(typeof(ChartDataTableConverter))]
     public class DataTable
     {
         private readonly bool useLinq;
@@ -33,7 +36,7 @@ namespace GoogleChart.Net.Wrapper
         [JsonIgnore]
         public IList<ColumnType> ColumnTypes { get; set; } = new List<ColumnType>();
 
-        [JsonPropertyName("cols")]
+        [JsonProperty("cols")]
         internal IList<Column> Columns { get; } = new List<Column>();
 
         [JsonIgnore]
@@ -112,18 +115,11 @@ namespace GoogleChart.Net.Wrapper
 
 
 
-        public string ToJson()
+        public string ToJson(bool formatted = false)
         {
-            return ToJson(new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
+            return SerializerHelper.Serialize(this, formatted);
         }
 
 
-        public string ToJson(JsonSerializerOptions options)
-        {
-            if (options.DefaultIgnoreCondition == JsonIgnoreCondition.Never)
-                options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-
-            return JsonSerializer.Serialize(this, options);
-        }
     }
 }

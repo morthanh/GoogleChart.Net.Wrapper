@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using GoogleChart.Net.Wrapper.Extensions;
+using GoogleChart.Net.Wrapper.Options;
 
 namespace GoogleChart.Net.Wrapper.Examples.Pages
 {

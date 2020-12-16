@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using System.Linq;
+using System.Globalization;
 
 namespace GoogleChart.Net.Wrapper.Tests
 {
@@ -20,8 +21,8 @@ namespace GoogleChart.Net.Wrapper.Tests
             var json = dt.ToJson();
 
             var jelem = JsonHelper.Deserialize(json);
-            Assert.IsNotNull(jelem.GetProperty("cols"));
-            Assert.IsNotNull(jelem.GetProperty("rows"));
+            Assert.IsNotNull(jelem["cols"]);
+            Assert.IsNotNull(jelem["rows"]);
 
         }
 
@@ -34,13 +35,17 @@ namespace GoogleChart.Net.Wrapper.Tests
             var json = dt.ToJson();
 
             var jelem = JsonHelper.Deserialize(json);
-            Assert.AreEqual(1, jelem.GetProperty("cols").GetArrayLength());
+            Assert.AreEqual(2, jelem.Count); //cols and rows
 
-            var jcolElem = jelem.GetProperty("cols")[0];
-            Assert.IsNotNull(jcolElem);
-            Assert.IsNotNull(jcolElem.GetProperty("id"));
-            Assert.IsNotNull(jcolElem.GetProperty("type"));
-            Assert.AreEqual("string", jcolElem.GetProperty("type").GetString());
+            Assert.AreEqual(0, jelem["rows"].Count()); // no rows
+            Assert.AreEqual(1, jelem["cols"].Count()); // one column
+
+            var jCol = jelem["cols"][0];
+
+            Assert.IsNotEmpty((string)jCol["id"]);
+            Assert.AreEqual("string", (string)jCol["type"]);
+            Assert.IsNull(jCol["label"]);
+            Assert.IsNull(jCol["role"]);
         }
 
         [Test]
@@ -55,9 +60,8 @@ namespace GoogleChart.Net.Wrapper.Tests
             var json = dt.ToJson();
 
             var jelem = JsonHelper.Deserialize(json);
-            var jrowElem = jelem.GetProperty("rows")[0];
-            var jcElem = jrowElem.GetProperty("c");
-            Assert.IsTrue(jcElem[0].GetProperty("v").GetInt32() == 1);
+            var jValue = jelem["rows"][0]["c"][0]["v"];
+            Assert.IsTrue((int)jValue == 1);
 
         }
 
@@ -71,12 +75,11 @@ namespace GoogleChart.Net.Wrapper.Tests
 
             dt.AddRow(new List<Cell> { new Cell(date) });
 
-            var json = dt.ToJson();
+            var json = dt.ToJson(true);
 
             var jelem = JsonHelper.Deserialize(json);
-            var jrowElem = jelem.GetProperty("rows")[0];
-            var jcElem = jrowElem.GetProperty("c");
-            Assert.IsTrue(jcElem[0].GetProperty("v").GetString() == "new Date(2000, 0, 1, 12, 30, 15)");
+            var jValElem = jelem["rows"][0]["c"][0]["v"];
+            Assert.IsTrue(string.Compare(jValElem.ToString(), "Date(2000, 0, 1, 12, 30, 15)", CultureInfo.InvariantCulture, CompareOptions.IgnoreCase | CompareOptions.IgnoreSymbols) == 0);
         }
 
         [Test]
@@ -92,9 +95,8 @@ namespace GoogleChart.Net.Wrapper.Tests
             var json = dt.ToJson();
 
             var jelem = JsonHelper.Deserialize(json);
-            var jrowElem = jelem.GetProperty("rows")[0];
-            var jcElem = jrowElem.GetProperty("c");
-            Assert.IsTrue(jcElem[0].GetProperty("v").GetString() == "new Date(2000, 0, 1)");
+            var jValElem = jelem["rows"][0]["c"][0]["v"];
+            Assert.IsTrue((string)jValElem == "Date(2000, 0, 1)");
         }
 
 
@@ -111,9 +113,8 @@ namespace GoogleChart.Net.Wrapper.Tests
             var json = dt.ToJson();
 
             var jelem = JsonHelper.Deserialize(json);
-            var jrowElem = jelem.GetProperty("rows")[0];
-            var jcElem = jrowElem.GetProperty("c");
-            Assert.IsTrue(jcElem[0].GetProperty("v").GetString() == "[\"12, 30, 15\"]");
+            var jValElem = jelem["rows"][0]["c"][0]["v"];
+            Assert.IsTrue((string)jValElem == "[\"12, 30, 15\"]");
         }
 
         [Test]
@@ -129,9 +130,8 @@ namespace GoogleChart.Net.Wrapper.Tests
             var json = dt.ToJson();
 
             var jelem = JsonHelper.Deserialize(json);
-            var jrowElem = jelem.GetProperty("rows")[0];
-            var jcElem = jrowElem.GetProperty("c");
-            Assert.IsTrue(jcElem[0].GetProperty("v").GetString() == "[\"12, 30, 15\"]");
+            var jrowElem = jelem["rows"][0]["c"][0]["v"];
+            Assert.IsTrue((string)jrowElem == "[\"12, 30, 15\"]");
         }
 
         [Test]
@@ -142,12 +142,12 @@ namespace GoogleChart.Net.Wrapper.Tests
 
             dt.AddRow(new List<Cell> { new Cell(true) });
 
-            var json = dt.ToJson();
+            var json = dt.ToJson(true);
 
             var jelem = JsonHelper.Deserialize(json);
-            var jrowElem = jelem.GetProperty("rows")[0];
-            var jcElem = jrowElem.GetProperty("c");
-            Assert.IsTrue(jcElem[0].GetProperty("v").GetBoolean());
+            var jrowElem = jelem["rows"][0];
+            var jcElem = jrowElem["c"];
+            Assert.IsTrue(bool.Parse((string)jcElem[0]["v"]));
         }
 
         [Test()]

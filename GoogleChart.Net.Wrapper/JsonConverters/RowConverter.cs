@@ -1,21 +1,23 @@
-﻿using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace GoogleChart.Net.Wrapper.JsonConverters
 {
     public sealed class RowConverter : JsonConverter<Row>
     {
-        public override Row Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+
+        public override Row ReadJson(JsonReader reader, Type objectType, Row existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             throw new NotImplementedException();
         }
 
-        public override void Write(Utf8JsonWriter writer, Row row, JsonSerializerOptions options)
+
+
+        public override void WriteJson(JsonWriter writer,  Row row, JsonSerializer serializer)
         {
             writer.WriteStartObject();
-
-            writer.WriteStartArray("c");
+            writer.WritePropertyName("c");
+            writer.WriteStartArray();
 
             int i = 0;
             foreach (var cell in row.Cells)

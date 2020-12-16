@@ -1,7 +1,7 @@
 ﻿using GoogleChart.Net.Wrapper.JsonConverters;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace GoogleChart.Net.Wrapper
 {
