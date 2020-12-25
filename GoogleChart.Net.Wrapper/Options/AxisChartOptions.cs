@@ -46,5 +46,23 @@ namespace GoogleChart.Net.Wrapper.Options
         [JsonProperty("fontName")]
         public string? FontName { get; set; }
 
+        [JsonProperty("interpolateNulls")]
+        public bool? InterpolateNulls { get; set; }
+
+        [JsonProperty("lineDashStyle")]
+        public int[]? LineDashStyle { get; set; }
+
+        [JsonProperty("lineWidth")]
+        public int? LineWidth { get; set; }
+
+        [JsonProperty("hAxis")]
+        public HorizontalAxis? HorizontalAxis { get; set; }
+
+        [JsonProperty("vAxis")]
+        public VerticalAxis? VerticalAxis { get; set; }
+
+        [JsonProperty("orientation")]
+        public AxisChartOrientation? Orientation { get; set; }
+
     }
 }
