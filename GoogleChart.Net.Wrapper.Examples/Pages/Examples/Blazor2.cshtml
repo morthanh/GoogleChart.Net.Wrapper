@@ -1,19 +1,31 @@
 ﻿@page "/Examples/Blazor2"
 @using GoogleChart.Net.Wrapper.Blazor.Pages
 @using GoogleChart.Net.Wrapper.Extensions
+@using GoogleChart.Net.Wrapper.Options
 
 @{
     int i = 0;
     var dt = new DataTable();
     dt.AddColumn(new Column());
     dt.AddColumn(new Column(ColumnType.Number));
-    Data.TestData.Data1Dim.ToList().ForEach(x => dt.AddRow(new Cell[] { new Cell(++i), new Cell(x)}));
+    Data.TestData.Data1Dim.ToList().ForEach(x => dt.AddRow(new Cell[] { new Cell(++i), new Cell(x) }));
+
+    dt = Data.TestData.Data1Dim.ToDataTable(conf =>
+    {
+        conf.AddColumn(x => i++);
+        conf.AddColumn(x => x);
+        conf.WithOptions<LineChartOptions>(opt =>
+        {
+
+        });
+
+    });
 }
 
 <p>blazor2</p>
 
 
-<component type="typeof(Chart)" param-ChartType="ChartType.LineChart" param-DataTable="dt" render-mode="Server" />
+<component type="typeof(Chart)" param-ChartType="ChartType.LineChart" param-ChartDataTable="dt" render-mode="Server" />
 
 
 

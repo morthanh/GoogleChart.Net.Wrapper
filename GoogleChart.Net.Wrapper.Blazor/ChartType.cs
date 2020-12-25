@@ -10,6 +10,7 @@ namespace GoogleChart.Net.Wrapper.Blazor
     {
         LineChart,
         AreaChart,
-        Table
+        Table,
+        Gauge,
     }
 }

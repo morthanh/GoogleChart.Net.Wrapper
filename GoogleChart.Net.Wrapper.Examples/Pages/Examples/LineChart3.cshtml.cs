@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using GoogleChart.Net.Wrapper.Extensions;
 using System.Drawing;
+using GoogleChart.Net.Wrapper.Options;
 
 namespace GoogleChart.Net.Wrapper.Examples.Pages.Examples
 {
@@ -23,6 +24,8 @@ namespace GoogleChart.Net.Wrapper.Examples.Pages.Examples
                 conf.WithOptions<LineChartOptions>(options =>
                 {
                     options.Title = "My linechart with options";
+                    options.TitlePosition = TitlePosition.In;
+                    options.AxisTitlesPosition = AxisTitlesPosition.In;
                     options.CurveType = CurveType.Function;
                     options.BackgroundColor = ChartBackgroundColor.Create("gray", 1, "aliceblue");
                     options.ChartArea = new ChartArea

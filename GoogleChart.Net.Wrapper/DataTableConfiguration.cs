@@ -1,11 +1,12 @@
-﻿using System;
+﻿using GoogleChart.Net.Wrapper.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace GoogleChart.Net.Wrapper
 {
-   
+
     public class DataTableConfiguration<T>
     {
         private readonly IEnumerable<T> source;
@@ -22,7 +23,19 @@ namespace GoogleChart.Net.Wrapper
 
         internal DataTable DataTable => dataTable;
 
-
+        /// <summary>
+        /// Adds a chart options instance used when serializing. Use this to customize the appearance of the chart. 
+        /// </summary>
+        /// <typeparam name="TOptions">The type of options instance to use. Use <see cref="TableChartOptions"/> for table options, <see cref="GaugeOptions"/> for gauge options etc.</typeparam>
+        /// <param name="optionsAction"></param>
+        /// <returns></returns>
+        public DataTableConfiguration<T> WithOptions<TOptions>(Action<TOptions> optionsAction) where TOptions : ChartOptions
+        {
+            var option = Activator.CreateInstance(typeof(TOptions)) as TOptions;
+            optionsAction(option);
+            options = option;
+            return this;
+        }
 
         public DataTableConfiguration<T> AddColumnLabels(params string[] colLabels)
         {
@@ -32,63 +45,45 @@ namespace GoogleChart.Net.Wrapper
 
         public DataTableConfiguration<T> AddColumn<TReturn>(Func<T, TReturn> valueSelector)
         {
+            return AddColumn(null, valueSelector);
+        }
+
+        public DataTableConfiguration<T> AddColumn<TReturn>(string? label, Func<T, TReturn> valueSelector)
+        {
+            if (valueSelector is null)
+            {
+                throw new ArgumentNullException(nameof(valueSelector));
+            }
+
             var returnTypeCode = Type.GetTypeCode(typeof(TReturn));
+
+            Column columnToAdd;
 
             switch (returnTypeCode)
             {
                 case TypeCode.Single:
                 case TypeCode.Double:
                 case TypeCode.Int32:
-                    columns.Add(new Column(ColumnType.Number));
+                    columnToAdd = new Column(ColumnType.Number, label);
                     break;
                 case TypeCode.String:
-                    columns.Add(new Column(ColumnType.String));
+                    columnToAdd = new Column(ColumnType.String, label);
+                    break;
+                case TypeCode.DateTime:
+                    columnToAdd = new Column(ColumnType.Datetime, label);
                     break;
                 default:
                     throw new NotSupportedException($"Returtype '{returnTypeCode}' is not yet supported");
             }
 
-            valueSelectors.Add((c) => valueSelector(c));
-            return this;
+            return AddColumn(columnToAdd, c => valueSelector(c));
         }
-
-        public DataTableConfiguration<T> AddColumn<TReturn>(string label, Func<T, TReturn> valueSelector)
-        {
-            var returnTypeCode = Type.GetTypeCode(typeof(TReturn));
-
-            switch (returnTypeCode)
-            {
-                case TypeCode.Single:
-                case TypeCode.Double:
-                case TypeCode.Int32:
-                    columns.Add(new Column(ColumnType.Number, label));
-                    break;
-                case TypeCode.String:
-                    columns.Add(new Column(ColumnType.String, label));
-                    break;
-                default:
-                    throw new NotSupportedException($"Returtype '{returnTypeCode}' is not yet supported");
-            }
-
-            valueSelectors.Add((c) => valueSelector(c));
-            return this;
-        }
-
-        public DataTableConfiguration<T> WithOptions<TOptions>(Action<TOptions> optionsAction) where TOptions : ChartOptions
-        {
-            var option = Activator.CreateInstance(typeof(TOptions)) as TOptions;
-            optionsAction(option);
-            options = option;
-            return this;
-        }
-
-
 
 
         public DataTableConfiguration<T> AddColumn(Column column, Func<T, object> valueSelector)
         {
             columns.Add(column);
-            valueSelectors.Add(x => valueSelector(x));
+            valueSelectors.Add(valueSelector);
             return this;
         }
         public DataTableConfiguration<T> AddColumn(ColumnType columnType, Func<T, object> valueSelector)

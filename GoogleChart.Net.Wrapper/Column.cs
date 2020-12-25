@@ -1,5 +1,6 @@
 ﻿using GoogleChart.Net.Wrapper.JsonConverters;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace GoogleChart.Net.Wrapper
 {
@@ -14,28 +15,29 @@ namespace GoogleChart.Net.Wrapper
         /// <summary>
         /// Optional id for use when referencing this <see cref="Column"/> from JavaScript
         /// </summary>
-        [JsonPropertyName("id")]
-        public string Id { get; internal set; }
+        [JsonProperty("id")]
+        public string? Id { get; internal set; }
 
-        [JsonPropertyName("label")]
-        public string Label { get; }
+        [JsonProperty("label")]
+        public string? Label { get; }
 
-        [JsonPropertyName("type")]
-        [JsonStringEnumCamelCaseConverter]
+        [JsonProperty("type")]
+        //[JsonConverter(typeof(StringEnumConverter))]
         public ColumnType ColumnType { get; }
 
-        [JsonPropertyName("role")]
+        [JsonProperty("role")]
+        //[JsonConverter(typeof(StringEnumConverter))]
         public ColumnRole? Role { get; }
 
         public Column() : this(ColumnType.String, null, null, null) { }
 
         public Column(ColumnType columnType) : this(columnType, null, null, null) { }
 
-        public Column(ColumnType columnType, string label) : this(columnType, label, null, null) { }
+        public Column(ColumnType columnType, string? label) : this(columnType, label, null, null) { }
 
-        public Column(ColumnType columnType, string label, string id) : this(columnType, label, id, null) { }
+        public Column(ColumnType columnType, string? label, string? id) : this(columnType, label, id, null) { }
 
-        public Column(ColumnType columnType, string label, string id, ColumnRole? role)
+        public Column(ColumnType columnType, string? label, string? id, ColumnRole? role)
         {
             ColumnType = columnType;
             Id = id;

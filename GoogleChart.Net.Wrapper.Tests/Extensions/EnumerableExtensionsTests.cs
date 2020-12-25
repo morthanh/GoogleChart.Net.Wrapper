@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using GoogleChart.Net.Wrapper;
 using GoogleChart.Net.Wrapper.Extensions;
 using System;
 using System.Collections.Generic;
@@ -8,6 +7,7 @@ using System.Text.Json;
 using System.Linq;
 using GoogleChart.Net.Wrapper.Tests;
 using System.Threading;
+using GoogleChart.Net.Wrapper.Options;
 
 namespace GoogleChart.Net.Wrapper.Extensions.Tests
 {
@@ -43,8 +43,7 @@ namespace GoogleChart.Net.Wrapper.Extensions.Tests
             var json = dt.ToJson();
 
             var jelem = JsonHelper.Deserialize(json);
-            var jrowsElem = jelem.GetProperty("rows");
-            Assert.AreEqual(10, jrowsElem.GetArrayLength());
+            Assert.AreEqual(10, jelem["rows"].Count());
         }
 
 
@@ -75,11 +74,11 @@ namespace GoogleChart.Net.Wrapper.Extensions.Tests
                     config.AddColumn(ColumnType.Number, x => x.Value);
                 });
 
-            var json = dt.ToJson();
+            var json = dt.ToJson(true);
 
             var jelem = JsonHelper.Deserialize(json);
-            var jrowsElem = jelem.GetProperty("rows");
-            Assert.AreEqual(10, jrowsElem.GetArrayLength());
+            var jrowsElem = jelem.Property("rows").Value;
+            Assert.AreEqual(10, jrowsElem.Count());
         }
 
 
@@ -101,8 +100,8 @@ namespace GoogleChart.Net.Wrapper.Extensions.Tests
             var json = dt.ToJson();
 
             var jelem = JsonHelper.Deserialize(json);
-            var jrowsElem = jelem.GetProperty("rows");
-            Assert.AreEqual(10, jrowsElem.GetArrayLength());
+            var jrowsElem = jelem.Property("rows").Value;
+            Assert.AreEqual(10, jrowsElem.Count());
         }
 
         [Test]

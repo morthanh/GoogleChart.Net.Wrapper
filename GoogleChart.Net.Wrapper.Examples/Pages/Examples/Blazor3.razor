@@ -1,0 +1,111 @@
+﻿@page "/Examples/Blazor3"
+@using GoogleChart.Net.Wrapper.Extensions
+@using GoogleChart.Net.Wrapper.Options
+@code {
+    private DataTable GaugeDataTable { get; set; }
+
+    private Chart ChartElem { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GaugeDataTable = Data.TestData.Data1DimWithLabels.Take(2).ToDataTable(conf =>
+        {
+            int i = 1;
+
+            conf.AddColumn(x => "Gauge " + i++);
+            conf.AddColumn(x => x.Item2);
+            conf.WithOptions<GaugeOptions>(options =>
+            {
+                options.GreenFrom = 10;
+                options.GreenTo = 40;
+                options.Max = 50;
+                options.Min = 0;
+                options.MajorTicks = new string[] { "0", "10", "20", "30", "40", "50" };
+                options.MinorTicks = 10;
+                options.Animation = new GaugeAnimation
+                {
+                    Duration = 500,
+                    Easing = GaugeAnimationFunction.InAndOut
+                };
+
+            });
+        });
+    }
+
+    private void OnClick()
+    {
+        var rand = new Random();
+
+        var newVal = rand.Next(0, 50);
+        ChartElem.SetValueAsync(0, 1, newVal);
+
+        newVal = rand.Next(0, 50);
+        ChartElem.SetValueAsync(1, 1, newVal);
+    }
+}
+
+
+
+
+<div class="card mb-4">
+    <h5 class="card-header">Blazor 1 Example</h5>
+    <div class="card-body">
+
+        <Chart ChartType="ChartType.Gauge" ChartDataTable="GaugeDataTable" @ref="ChartElem" />
+
+        <button class="btn btn-primary" @onclick="OnClick">Update</button>
+    </div>
+</div>
+
+
+<div class="card">
+    <h5 class="card-header">Code behind</h5>
+    <div class="card-body">
+        <pre><code class="csharp" id="codeblock">
+@@page "/Examples/Blazor3"
+@@using GoogleChart.Net.Wrapper.Extensions
+@@code {
+    private DataTable GaugeDataTable { get; set; }
+
+    private Chart ChartElem { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GaugeDataTable = Data.TestData.Data1DimWithLabels.Take(2).ToDataTable(conf =>
+        {
+            int i = 1;
+
+            conf.AddColumn(x => "Gauge " + i++);
+            conf.AddColumn(x => x.Item2);
+            conf.WithOptions&lt;GaugeOptions&gt;(options =>
+            {
+                options.GreenFrom = 10;
+                options.GreenTo = 40;
+                options.Max = 50;
+                options.Min = 0;
+                options.MajorTicks = new string[] { "0", "10", "20", "30", "40", "50" };
+                options.MinorTicks = 10;
+                options.Animation = new GaugeAnimation
+                {
+                    Duration = 500,
+                    Easing = GaugeAnimationFunction.InAndOut
+                };
+
+            });
+        });
+    }
+
+    private void OnClick()
+    {
+        var rand = new Random();
+
+        var newVal = rand.Next(0, 50);
+        ChartElem.SetValueAsync(0, 1, newVal);
+
+        newVal = rand.Next(0, 50);
+        ChartElem.SetValueAsync(1, 1, newVal);
+    }
+}
+</code></pre>
+    </div>
+</div>

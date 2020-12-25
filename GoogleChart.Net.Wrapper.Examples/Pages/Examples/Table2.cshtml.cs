@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using GoogleChart.Net.Wrapper.Extensions;
+using GoogleChart.Net.Wrapper.Options;
 
 namespace GoogleChart.Net.Wrapper.Examples.Pages.Examples
 {
@@ -19,7 +20,7 @@ namespace GoogleChart.Net.Wrapper.Examples.Pages.Examples
                 conf.AddColumn("Value 2", x => x.Item3);
                 conf.WithOptions<TableChartOptions>(options =>
                 {
-                    options.Width = 200;
+                    options.Width = 400;
                     options.Height = 300;
                     options.SortAscending = false;
                     options.SortColumn = 2;

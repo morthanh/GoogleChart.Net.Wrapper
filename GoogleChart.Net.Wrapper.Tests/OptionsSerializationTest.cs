@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Linq;
 using GoogleChart.Net.Wrapper.Tests;
+using GoogleChart.Net.Wrapper.Options;
 
 
 namespace GoogleChart.Net.Wrapper.Tests

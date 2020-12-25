@@ -1,72 +1,21 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace GoogleChart.Net.Wrapper.JsonConverters
 {
 
-    public sealed class CharBackgroundColorConverter : JsonConverter<ChartBackgroundColor>
+    public sealed class ChartDataTableConverter : JsonConverter<DataTable>
     {
-        public override ChartBackgroundColor? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override DataTable ReadJson(JsonReader reader, Type objectType, DataTable existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             throw new NotImplementedException();
         }
 
-        public override void Write(Utf8JsonWriter writer, ChartBackgroundColor chartBackgroundColor, JsonSerializerOptions options)
+
+        public override void WriteJson(JsonWriter writer, DataTable dt, JsonSerializer serializer)
         {
-            if (!string.IsNullOrEmpty(chartBackgroundColor.Value))
-            {
-                writer.WriteStringValue(chartBackgroundColor.Value);
-            }
-            else
-            {
-                JsonSerializer.Serialize(writer, chartBackgroundColor, typeof(ChartBackgroundColor), options);
-            }
-        }
-    }
-
-    public sealed class UnitSizeConverter : JsonConverter<UnitSize>
-    {
-        public override UnitSize? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Write(Utf8JsonWriter writer, UnitSize unitSize, JsonSerializerOptions options)
-        {
-            if (unitSize.Parent is LineChartOptions)
-            {
-                if (!int.TryParse( unitSize.Value, out var pixels)){
-                    throw new Exception("For a line chart the width and height needs to be integer values");
-                }
-                writer.WriteNumberValue(pixels);
-
-            }
-            else if (unitSize.Parent is TableChartOptions)
-            {
-                writer.WriteStringValue(unitSize.Value);
-            }
-            else
-            {
-                writer.WriteStringValue(unitSize.Value);
-            }
-        }
-    }
-
-    public sealed class DataTableConverter : JsonConverter<DataTable>
-    {
-
-
-        public override DataTable Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Write(Utf8JsonWriter writer, DataTable dt, JsonSerializerOptions options)
-        {
-
-            if (dt.ColumnLabels != null  && dt.Columns.Count != dt.ColumnLabels.Count)
+            if (dt.ColumnLabels != null && dt.Columns.Count != dt.ColumnLabels.Count)
             {
                 throw new Exception("Number of column labels does not equal number of columns");
             }
@@ -76,7 +25,7 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
 
             //write cols
             writer.WritePropertyName("cols");
-            JsonSerializer.Serialize(writer, dt.Columns, typeof(IList<Column>), options);
+            serializer.Serialize(writer, dt.Columns, typeof(IList<Column>));
 
 
             //write rows
@@ -88,20 +37,23 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
 
 
 
-        private void WriteRows(Utf8JsonWriter writer, IEnumerable<object> valuesSource, IList<ColumnType> columnTypes, IList<string> columnLabels)
+
+        private void WriteRows(JsonWriter writer, IEnumerable<object> valuesSource, IList<ColumnType> columnTypes, IList<string> columnLabels)
         {
             int i = 0;
             int numColumns = columnTypes.Count;
 
+            writer.WritePropertyName("rows");
 
-            writer.WriteStartArray("rows");
+            writer.WriteStartArray();
 
             if (columnLabels?.Count > 0)
             {
                 writer.WriteStartObject();
-                writer.WriteStartArray("c");
+                writer.WritePropertyName("c");
+                writer.WriteStartArray();
 
-                foreach(var label in columnLabels)
+                foreach (var label in columnLabels)
                 {
                     writer.WriteStartObject();
                     WriteValue(label, columnTypes[i % numColumns], writer, true);
@@ -116,12 +68,13 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
             {
                 if (val is Row row)
                 {
-                    foreach(var cell in row.Cells)
+                    foreach (var cell in row.Cells)
                     {
                         if (i % numColumns == 0)
                         {
                             writer.WriteStartObject();
-                            writer.WriteStartArray("c");
+                            writer.WritePropertyName("c");
+                            writer.WriteStartArray();
                         }
 
                         writer.WriteStartObject();
@@ -142,7 +95,8 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
                     if (i % numColumns == 0)
                     {
                         writer.WriteStartObject();
-                        writer.WriteStartArray("c");
+                        writer.WritePropertyName("c");
+                        writer.WriteStartArray();
                     }
 
                     writer.WriteStartObject();
@@ -163,11 +117,12 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
 
         }
 
-        internal void WriteValue(object v, ColumnType columnType, Utf8JsonWriter writer, bool isLabel)
+        internal void WriteValue(object v, ColumnType columnType, JsonWriter writer, bool isLabel)
         {
             if (isLabel)
             {
-                writer.WriteString("v", v.ToString());
+                writer.WritePropertyName("v");
+                writer.WriteValue(v.ToString());
             }
             else if (v is Cell cell)
             {
@@ -175,6 +130,7 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
             }
             else
             {
+                writer.WritePropertyName("v");
 
                 switch (columnType)
                 {
@@ -182,47 +138,49 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
                         switch (Type.GetTypeCode(v.GetType()))
                         {
                             case TypeCode.Decimal:
-                                writer.WriteNumber("v", (decimal)v);
+                                writer.WriteValue((decimal)v);
                                 break;
                             case TypeCode.Double:
-                                writer.WriteNumber("v", (double)v);
+                                writer.WriteValue((double)v);
                                 break;
                             case TypeCode.Single:
-                                writer.WriteNumber("v", (float)v);
+                                writer.WriteValue((float)v);
                                 break;
                             case TypeCode.Int32:
-                                writer.WriteNumber("v", (int)v);
+                                writer.WriteValue((int)v);
                                 break;
                             default:
                                 throw new NotSupportedException("Unsupported type " + v.GetType().FullName);
                         }
                         break;
                     case ColumnType.String:
-                        writer.WriteString("v", v.ToString());
+                        writer.WriteValue( v.ToString());
                         break;
                     case ColumnType.Boolean:
-                        writer.WriteBoolean("v", (bool)v);
+                        writer.WriteValue((bool)v);
                         break;
                     case ColumnType.Date:
                         var d = (DateTime)v;
-                        writer.WriteString("v", string.Format("new Date({0}, {1}, {2})", d.Year, d.Month - 1, d.Day));
+                        writer.WriteValue( string.Format("Date({0}, {1}, {2})", d.Year, d.Month - 1, d.Day));
                         break;
                     case ColumnType.Datetime:
                         var dt = (DateTime)v;
-                        writer.WriteString("v", string.Format("new Date({0}, {1}, {2}, {3}, {4}, {5})", dt.Year, dt.Month - 1, dt.Day,
+                        writer.WriteValue(string.Format("Date({0}, {1}, {2}, {3}, {4}, {5})", dt.Year, dt.Month - 1, dt.Day,
                                                     dt.Hour, dt.Minute, dt.Second));
                         break;
                     case ColumnType.Timeofday:
                         var tod = v is DateTime time ? time.TimeOfDay : (TimeSpan)v;
-                        writer.WriteString("v", string.Format("[\"{0}, {1}, {2}\"]", tod.Hours, tod.Minutes, tod.Seconds));
+                        writer.WriteValue( string.Format("[\"{0}, {1}, {2}\"]", tod.Hours, tod.Minutes, tod.Seconds));
                         break;
                     default:
                         throw new Exception($"Columntype '{columnType}' not supported");
                 }
+
             }
 
 
         }
+
 
     }
 }

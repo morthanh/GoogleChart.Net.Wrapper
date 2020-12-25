@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Text.Json;
 
 namespace GoogleChart.Net.Wrapper.Tests
 {
@@ -10,12 +10,12 @@ namespace GoogleChart.Net.Wrapper.Tests
 
         public static string SerializeFormatted(object obj)
         {
-            return JsonSerializer.Serialize(obj, new JsonSerializerOptions { WriteIndented = true });
+            return JsonConvert.SerializeObject( obj, Formatting.Indented);
         }
 
-        public static JsonElement Deserialize(string json)
+        public static JObject Deserialize(string json)
         {
-            return (JsonElement)JsonSerializer.Deserialize<object>(json);
+            return JObject.Parse(json);
         }
 
     }
