@@ -55,7 +55,9 @@ namespace GoogleChart.Net.Wrapper
                 throw new ArgumentNullException(nameof(valueSelector));
             }
 
-            var returnTypeCode = Type.GetTypeCode(typeof(TReturn));
+            var returnType = typeof(TReturn);
+
+            var returnTypeCode = Type.GetTypeCode(returnType);
 
             Column columnToAdd;
 
@@ -71,6 +73,9 @@ namespace GoogleChart.Net.Wrapper
                     break;
                 case TypeCode.DateTime:
                     columnToAdd = new Column(ColumnType.Datetime, label);
+                    break;
+                case TypeCode.Object when returnType.FullName is "System.TimeSpan":
+                    columnToAdd = new Column(ColumnType.Timeofday, label);
                     break;
                 default:
                     throw new NotSupportedException($"Returtype '{returnTypeCode}' is not yet supported");

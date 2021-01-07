@@ -10,10 +10,10 @@ using System.Text;
 
 namespace GoogleChart.Net.Wrapper
 {
-    internal static class SerializerHelper
+    public static class SerializerHelper
     {
 
-        internal static JsonSerializer CreateSerializer(bool formatted = false)
+        public static JsonSerializer CreateSerializer(bool formatted = false)
         {
             return new JsonSerializer()
             {
@@ -32,7 +32,7 @@ namespace GoogleChart.Net.Wrapper
             };
         }
 
-        internal static string Serialize(object obj, bool formatted = false)
+        public static string Serialize(object obj, bool formatted = false)
         {
             var serializer = CreateSerializer(formatted);
 

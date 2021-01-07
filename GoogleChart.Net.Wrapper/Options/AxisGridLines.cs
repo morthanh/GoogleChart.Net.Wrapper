@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System;
+using System.Collections;
 
 namespace GoogleChart.Net.Wrapper.Options
 {
@@ -12,6 +14,9 @@ namespace GoogleChart.Net.Wrapper.Options
         public int? Count { get; set; }
 
         //TODO: hAxis.gridlines.interval
+
+        [JsonProperty("interval")]
+        public IEnumerable? Interval { get; set; }
 
         [JsonProperty("minSpacing")]
         public int? MinSpacing { get; set; }

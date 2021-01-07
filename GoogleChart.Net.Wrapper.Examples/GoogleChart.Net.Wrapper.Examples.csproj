@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GoogleChart.Net.Wrapper.Blazor\GoogleChart.Net.Wrapper.Blazor.csproj" />
+    <ProjectReference Include="..\GoogleChart.Net.Wrapper.Mvc\GoogleChart.Net.Wrapper.Mvc.csproj" />
     <ProjectReference Include="..\GoogleChart.Net.Wrapper\GoogleChart.Net.Wrapper.csproj" />
   </ItemGroup>
 
@@ -23,6 +24,10 @@
     <Compile Update="Pages\Examples\Table1 - Copy.cshtml.cs">
       <DependentUpon>Table1.cshtml.cs</DependentUpon>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\" />
   </ItemGroup>
 
 </Project>

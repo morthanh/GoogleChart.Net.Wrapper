@@ -17,38 +17,44 @@ namespace GoogleChart.Net.Wrapper
     [JsonConverter(typeof(ChartDataTableConverter))]
     public class DataTable
     {
-        private readonly bool useLinq;
-        private readonly List<Row> rows;
+        private readonly List<Row>? rows;
+        private readonly List<Column> columns = new List<Column>();
 
         public DataTable()
         {
             rows = new List<Row>();
-            ValuesSource = rows.AsEnumerable();
-            useLinq = false;
+            Values = CreateRowsEnumeratorToValuesEnumerator(rows);
         }
 
         public DataTable(IEnumerable<object> valueSource)
         {
-            ValuesSource = valueSource;
-            useLinq = true;
+            Values = valueSource;
+        }
+
+
+        private IEnumerable<object> CreateRowsEnumeratorToValuesEnumerator(List<Row> rows)
+        {
+            foreach(var row in rows)
+            {
+                foreach(var cell in row.Cells)
+                {
+                    yield return cell;
+                }
+            }
         }
 
         [JsonIgnore]
         public IList<ColumnType> ColumnTypes { get; set; } = new List<ColumnType>();
 
         [JsonProperty("cols")]
-        internal IList<Column> Columns { get; } = new List<Column>();
-
+        public IReadOnlyList<Column> Columns => columns.AsReadOnly();
         [JsonIgnore]
-        internal IEnumerable<object> ValuesSource { get; }
+        public IEnumerable<object> Values { get; }
 
         [JsonIgnore]
         public ChartOptions? Options { get; set; }
 
-        [JsonIgnore]
-        internal bool UseLinq => useLinq;
-
-        internal List<string> ColumnLabels { get; set; }
+        internal List<string>? ColumnLabels { get; set; }
 
 
         /// <summary>
@@ -68,7 +74,7 @@ namespace GoogleChart.Net.Wrapper
                 throw new Exception($"Column id '{column.Id}' is already used");
             }
 
-            Columns.Add(column);
+            columns.Add(column);
             ColumnTypes.Add(column.ColumnType);
         }
         public void AddColumn(ColumnType columnType)
