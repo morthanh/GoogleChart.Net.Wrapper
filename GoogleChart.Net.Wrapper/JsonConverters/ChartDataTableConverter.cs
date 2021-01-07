@@ -29,7 +29,7 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
 
 
             //write rows
-            WriteRows(writer, dt.ValuesSource, dt.ColumnTypes, dt.ColumnLabels);
+            WriteRows(writer, dt.Values, dt.ColumnTypes, dt.ColumnLabels);
 
 
             writer.WriteEndObject();
@@ -66,32 +66,32 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
 
             foreach (var val in valuesSource)
             {
-                if (val is Row row)
-                {
-                    foreach (var cell in row.Cells)
-                    {
-                        if (i % numColumns == 0)
-                        {
-                            writer.WriteStartObject();
-                            writer.WritePropertyName("c");
-                            writer.WriteStartArray();
-                        }
+                //if (val is Row row)
+                //{
+                //    foreach (var cell in row.Cells)
+                //    {
+                //        if (i % numColumns == 0)
+                //        {
+                //            writer.WriteStartObject();
+                //            writer.WritePropertyName("c");
+                //            writer.WriteStartArray();
+                //        }
 
-                        writer.WriteStartObject();
-                        WriteValue(cell, columnTypes[i % numColumns], writer, false);
-                        writer.WriteEndObject();
+                //        writer.WriteStartObject();
+                //        WriteValue(cell, columnTypes[i % numColumns], writer, false);
+                //        writer.WriteEndObject();
 
-                        if (i % numColumns == numColumns - 1)
-                        {
-                            writer.WriteEndArray();
-                            writer.WriteEndObject();
-                        }
+                //        if (i % numColumns == numColumns - 1)
+                //        {
+                //            writer.WriteEndArray();
+                //            writer.WriteEndObject();
+                //        }
 
-                        i++;
-                    }
-                }
-                else
-                {
+                //        i++;
+                //    }
+                //}
+                //else
+                //{
                     if (i % numColumns == 0)
                     {
                         writer.WriteStartObject();
@@ -110,7 +110,7 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
                     }
 
                     i++;
-                }
+                //}
             }
 
             writer.WriteEndArray();
@@ -170,7 +170,15 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
                         break;
                     case ColumnType.Timeofday:
                         var tod = v is DateTime time ? time.TimeOfDay : (TimeSpan)v;
-                        writer.WriteValue( string.Format("[\"{0}, {1}, {2}\"]", tod.Hours, tod.Minutes, tod.Seconds));
+
+                        writer.WriteStartArray();
+                        writer.WriteValue(tod.Hours);
+                        writer.WriteValue(tod.Minutes);
+                        writer.WriteValue(tod.Seconds);
+                        writer.WriteEndArray();
+
+
+                        //writer.WriteRaw( string.Format("[{0}, {1}, {2}]", tod.Hours, tod.Minutes, tod.Seconds));
                         break;
                     default:
                         throw new Exception($"Columntype '{columnType}' not supported");

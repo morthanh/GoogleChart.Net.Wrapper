@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GoogleChart.Net.Wrapper.Datasource;
+using GoogleChart.Net.Wrapper.Examples.ChartApiHandlers;
 
 namespace GoogleChart.Net.Wrapper.Examples
 {
@@ -23,10 +25,20 @@ namespace GoogleChart.Net.Wrapper.Examples
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<Api1Handler>();
+
+
             services.AddRazorPages()
                 .AddRazorRuntimeCompilation();
 
+            services.AddGoogleChartApi(opt =>
+            {
+                opt.AddHandler<Api1Handler>("/test");
+            });
+
             services.AddServerSideBlazor();
+
+            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,8 +62,11 @@ namespace GoogleChart.Net.Wrapper.Examples
 
             app.UseAuthorization();
 
+            app.UseGoogleChartApi();
+
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapRazorPages();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");

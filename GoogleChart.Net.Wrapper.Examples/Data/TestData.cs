@@ -32,9 +32,10 @@ namespace GoogleChart.Net.Wrapper.Examples.Data
             .Select((x, i) => ("Item" + i, rand.Next(0, 50), rand.Next(50)));
 
 
-        //    => new List<(int, int)> { 
-        //    (2, 2)
-        //};
+
+        public static IEnumerable<(int, int, int, int)> Data4DimRandom => Enumerable.Range(0, 20)
+            .Select(x => (rand.Next(0, 10), rand.Next(10, 20), rand.Next(20, 40), rand.Next(40, 50)));
+
 
 
     }
