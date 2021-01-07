@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 
-namespace GoogleChart.Net.Wrapper.Mvc
+namespace GoogleChart.Net.Wrapper.Datasource
 {
     public class GoogleChartOptions
     {

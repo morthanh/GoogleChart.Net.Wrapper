@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GoogleChart.Net.Wrapper.Mvc;
+using GoogleChart.Net.Wrapper.Datasource;
 using GoogleChart.Net.Wrapper.Examples.ChartApiHandlers;
 
 namespace GoogleChart.Net.Wrapper.Examples

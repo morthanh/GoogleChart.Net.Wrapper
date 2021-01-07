@@ -4,7 +4,7 @@ using System;
 using System.Web;
 using System.Text;
 
-namespace GoogleChart.Net.Wrapper.Mvc
+namespace GoogleChart.Net.Wrapper.Datasource
 {
     public static class Extensions
     {
