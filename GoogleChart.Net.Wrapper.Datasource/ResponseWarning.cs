@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace GoogleChart.Net.Wrapper.Mvc
+namespace GoogleChart.Net.Wrapper.Datasource
 {
     public class ResponseWarning
     {

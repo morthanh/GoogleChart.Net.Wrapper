@@ -4,26 +4,58 @@
 }
 
 
-<div class="card">
-    <div id="chartDiv"></div>
+<div class="card mb-4">
+    <h5 class="card-header">Gauge 1 Example</h5>
+    <div class="card-body">
+        <div id="chartDiv"></div>
+    </div>
+</div>
+
+
+<div class="card-deck">
+    <div class="card">
+        <h5 class="card-header">C#</h5>
+        <div class="card-body">
+            <pre><code>var dt = Data.TestData.Data1DimWithLabels.Take(3).ToDataTable(conf =>
+{
+    conf.AddColumn(x => x.Item1);
+    conf.AddColumn(x => x.Item2);
+    conf.WithOptions&lt;GaugeOptions&gt;(options =>
+    {
+        options.GreenFrom = 10;
+        options.GreenTo = 40;
+        options.Max = 50;
+        options.Min = 0;
+        options.MajorTicks = new string[] {"0s", "10s", "20s", "30s", "40s", "50s" };
+        options.MinorTicks = 10;
+    });
+});
+
+(DataJson, OptionsJson) = dt;</code></pre>
+        </div>
+    </div>
+
+    <div class="card">
+        <h5 class="card-header">Javascript</h5>
+        <div class="card-body">
+            <pre><code>google.charts.load('current', { 'packages': ['gauge'] });
+google.charts.setOnLoadCallback(drawChart);
+
+function drawChart() {
+    var data = new google.visualization.DataTable('@@Html.Raw(Model.DataJson)');
+    var chart = new google.visualization.Gauge(document.getElementById('chartDiv'));
+    chart.draw(data, @@Html.Raw(Model.OptionsJson));
+}</code></pre>
+        </div>
+    </div>
 </div>
 
 <script>
-    // Load the Visualization API and the corechart package.
     google.charts.load('current', { 'packages': ['gauge'] });
-
-    // Set a callback to run when the Google Visualization API is loaded.
     google.charts.setOnLoadCallback(drawChart);
 
-    // Callback that creates and populates a data table,
-    // instantiates the pie chart, passes in the data and
-    // draws it.
     function drawChart() {
-
-        // Create the data table.
         var data = new google.visualization.DataTable('@Html.Raw(Model.DataJson)');
-
-        // Instantiate and draw our chart, passing in some options.
         var chart = new google.visualization.Gauge(document.getElementById('chartDiv'));
         chart.draw(data, @Html.Raw(Model.OptionsJson));
     }

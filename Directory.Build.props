@@ -3,6 +3,9 @@
   <PropertyGroup>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Version>0.2.1-alpha</Version>
   </PropertyGroup>
 </Project>

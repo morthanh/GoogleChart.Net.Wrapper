@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GoogleChart.Net.Wrapper.Blazor\GoogleChart.Net.Wrapper.Blazor.csproj" />
-    <ProjectReference Include="..\GoogleChart.Net.Wrapper.Mvc\GoogleChart.Net.Wrapper.Mvc.csproj" />
+    <ProjectReference Include="..\GoogleChart.Net.Wrapper.Datasource\GoogleChart.Net.Wrapper.Datasource.csproj" />
     <ProjectReference Include="..\GoogleChart.Net.Wrapper\GoogleChart.Net.Wrapper.csproj" />
   </ItemGroup>
 

@@ -1,11 +1,11 @@
-﻿using GoogleChart.Net.Wrapper.Mvc;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GoogleChart.Net.Wrapper.Extensions;
 using GoogleChart.Net.Wrapper.Options;
+using GoogleChart.Net.Wrapper.Datasource;
 
 namespace GoogleChart.Net.Wrapper.Examples.ChartApiHandlers
 {

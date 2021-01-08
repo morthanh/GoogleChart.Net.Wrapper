@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
 
-namespace GoogleChart.Net.Wrapper.Mvc
+namespace GoogleChart.Net.Wrapper.Datasource
 {
     public static class ApplicationBuilderExtensions
     {

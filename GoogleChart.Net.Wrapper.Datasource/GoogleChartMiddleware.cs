@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using System.Linq;
 
-namespace GoogleChart.Net.Wrapper.Mvc
+namespace GoogleChart.Net.Wrapper.Datasource
 {
     public class GoogleChartMiddleware
     {
