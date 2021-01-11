@@ -54,7 +54,7 @@ namespace GoogleChart.Net.Wrapper.Datasource
 
                         return;
                     }
-                    catch
+                    catch(Exception ex)
                     {
                         //return generic error message
                         await context.Response.WriteAsync(SerializerHelper.Serialize(
@@ -62,8 +62,10 @@ namespace GoogleChart.Net.Wrapper.Datasource
                             {
                                 RegId = reqId,
                                 Status = ApiResponseStatus.Error,
-                                Errors = new List<ResponseError> { new ResponseError(ErrorReason.InternalError, "Internal server error", null) }
+                                Errors = new List<ResponseError> { new ResponseError(ErrorReason.InternalError, "Internal server error", Options.IsDevelopment ? ex.StackTrace : null) }
                             }));
+
+                        return;
                     }
                 }
             }
