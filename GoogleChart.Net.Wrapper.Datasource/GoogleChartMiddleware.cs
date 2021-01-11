@@ -62,7 +62,7 @@ namespace GoogleChart.Net.Wrapper.Datasource
                             {
                                 RegId = reqId,
                                 Status = ApiResponseStatus.Error,
-                                Errors = new List<ResponseError> { new ResponseError(ErrorReason.InternalError, "Internal server error", Options.IsDevelopment ? ex.StackTrace : null) }
+                                Errors = new List<ResponseError> { new ResponseError(ErrorReason.InternalError, "Internal server error", Options.IsDevelopment ? ex.ToString() : null) }
                             }));
 
                         return;
