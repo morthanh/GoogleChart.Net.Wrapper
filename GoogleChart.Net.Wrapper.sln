@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoogleChart.Net.Wrapper.Bla
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoogleChart.Net.Wrapper.Datasource", "GoogleChart.Net.Wrapper.Datasource\GoogleChart.Net.Wrapper.Datasource.csproj", "{E1D52422-32FA-4643-8A4C-CF0DA16730F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleChart.Net.Wrapper.DatasourceTests", "GoogleChart.Net.Wrapper.DatasourceTests\GoogleChart.Net.Wrapper.DatasourceTests.csproj", "{9BEB4F41-CBC0-40B8-A3AD-1BD4DB42E7FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoogleChart.Net.Wrapper.DatasourceTests", "GoogleChart.Net.Wrapper.DatasourceTests\GoogleChart.Net.Wrapper.DatasourceTests.csproj", "{9BEB4F41-CBC0-40B8-A3AD-1BD4DB42E7FE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

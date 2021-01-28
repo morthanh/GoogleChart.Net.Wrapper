@@ -1,0 +1,93 @@
+﻿using NUnit.Framework;
+using GoogleChart.Net.Wrapper.Datasource;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.IO;
+
+namespace GoogleChart.Net.Wrapper.Datasource.Query.Tests
+{
+    [TestFixture]
+    public class ParserTests
+    {
+        [Test]
+        public void Parse_Select_Simple()
+        {
+            string str = "select col1, col2, col3";
+
+            using var memStream = new MemoryStream(Encoding.Default.GetBytes(str));
+            var scanner = new Scanner(memStream);
+            var parser = new Parser(scanner);
+            parser.Parse();
+
+            var queryRoot = parser.Tree.Root;
+            Assert.IsTrue(queryRoot.Count == 1);
+            Assert.IsTrue(queryRoot[0] is SelectNode);
+            Assert.IsTrue(queryRoot[0].Count == 3);
+        }
+
+
+        [Test]
+        public void Parse_Select_WithAddAndMultiply()
+        {
+            string str = "select col1, col2 + col3, col4 + 2 * 5";
+
+            using var memStream = new MemoryStream(Encoding.Default.GetBytes(str));
+            var scanner = new Scanner(memStream);
+            var parser = new Parser(scanner);
+            parser.Parse();
+
+            var root = parser.Tree.Root;
+            var select = root[0] as SelectNode;
+            Assert.IsTrue(select.Count == 3);
+
+            Assert.IsTrue(select[0] is LeafNode);
+            Assert.IsTrue(((LeafNode)select[0]).Value == "col1");
+
+            Assert.IsTrue(select[1] is AddNode);
+            Assert.IsTrue(select[1][0] is LeafNode);
+            Assert.IsTrue(((LeafNode)select[1][0]).Value == "col2");
+
+            Assert.IsTrue(select[2] is AddNode);
+            Assert.IsTrue(select[2][1] is MultiplyNode);
+            Assert.IsTrue(((LeafNode)select[2][1][1]).Value == "5");
+        }
+
+        [Test]
+        public void Parse_Select_WithParantheses()
+        {
+            string str = "select col1, (col2), col3 + (col4 + col5), (x + y) * col6";
+
+            using var memStream = new MemoryStream(Encoding.Default.GetBytes(str));
+            var scanner = new Scanner(memStream);
+            var parser = new Parser(scanner);
+            parser.Parse();
+
+            var root = parser.Tree.Root;
+            var select = root[0] as SelectNode;
+            Assert.IsTrue(select.Count == 4);
+
+            Assert.IsInstanceOf<AddNode>(select[2]);
+            Assert.IsInstanceOf<AddNode>(select[2][1]);
+            Assert.IsInstanceOf<LeafNode>(select[2][1][0]);
+            Assert.IsInstanceOf<LeafNode>(select[2][1][1]);
+
+        }
+
+        [Test]
+        public void Parse_Where_Simple()
+        {
+            string str = "select * where true";
+
+            using var memStream = new MemoryStream(Encoding.Default.GetBytes(str));
+            var scanner = new Scanner(memStream);
+            var parser = new Parser(scanner);
+            parser.Parse();
+
+            var root = parser.Tree.Root;
+            Assert.IsInstanceOf<WhereNode>(root[1]);
+            var whereNode = (WhereNode)root[1];
+            Assert.IsTrue(whereNode.Count == 1);
+        }
+    }
+}
