@@ -9,6 +9,8 @@ namespace GoogleChart.Net.Wrapper.Datasource
 
         public PathString RouteBasePath { get; set; } = "/api/gc";
 
+        public bool IsDevelopment { get; set; } = false;
+
 
         internal Dictionary<string, HandlerPath> Handlers { get; set; } = new Dictionary<string, HandlerPath>();
 

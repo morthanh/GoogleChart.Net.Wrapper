@@ -25,7 +25,7 @@ namespace GoogleChart.Net.Wrapper.Examples
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<Api1Handler>();
+            services.AddScoped<Api1Handler>();
 
 
             services.AddRazorPages()
@@ -34,6 +34,7 @@ namespace GoogleChart.Net.Wrapper.Examples
             services.AddGoogleChartApi(opt =>
             {
                 opt.AddHandler<Api1Handler>("/test");
+                opt.IsDevelopment = true;
             });
 
             services.AddServerSideBlazor();

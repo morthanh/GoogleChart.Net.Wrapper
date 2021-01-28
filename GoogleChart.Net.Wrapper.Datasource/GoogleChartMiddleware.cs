@@ -11,15 +11,13 @@ namespace GoogleChart.Net.Wrapper.Datasource
     {
         private readonly RequestDelegate next;
         private readonly IOptions<GoogleChartOptions> options;
-        private readonly IServiceProvider serviceProvider;
 
         private GoogleChartOptions Options => options.Value;
 
-        public GoogleChartMiddleware(RequestDelegate next, IOptions<GoogleChartOptions> options, IServiceProvider serviceProvider)
+        public GoogleChartMiddleware(RequestDelegate next, IOptions<GoogleChartOptions> options)
         {
             this.next = next ?? throw new ArgumentNullException(nameof(next));
             this.options = options ?? throw new ArgumentNullException(nameof(options));
-            this.serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
 
         public async Task Invoke(HttpContext context)
@@ -43,7 +41,7 @@ namespace GoogleChart.Net.Wrapper.Datasource
 
                     try
                     {
-                        var handlerInstance = (GoogleChartApiHandler)serviceProvider.GetService(handler.Type);
+                        var handlerInstance = (GoogleChartApiHandler)context.RequestServices.GetService(handler.Type);
                         var resp = await handlerInstance.HandleRequestAsync(context, parameters, tq);
 
                         resp.RegId = reqId;
@@ -54,7 +52,7 @@ namespace GoogleChart.Net.Wrapper.Datasource
 
                         return;
                     }
-                    catch
+                    catch(Exception ex)
                     {
                         //return generic error message
                         await context.Response.WriteAsync(SerializerHelper.Serialize(
@@ -62,8 +60,10 @@ namespace GoogleChart.Net.Wrapper.Datasource
                             {
                                 RegId = reqId,
                                 Status = ApiResponseStatus.Error,
-                                Errors = new List<ResponseError> { new ResponseError(ErrorReason.InternalError, "Internal server error", null) }
+                                Errors = new List<ResponseError> { new ResponseError(ErrorReason.InternalError, "Internal server error", Options.IsDevelopment ? ex.ToString() : null) }
                             }));
+
+                        return;
                     }
                 }
             }
