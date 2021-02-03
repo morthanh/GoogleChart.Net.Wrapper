@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 
 namespace GoogleChart.Net.Wrapper.Datasource
 {
     public abstract class GoogleChartApiHandler
     {
 
-        public abstract Task<ApiResponse> HandleRequestAsync(HttpContext context, IReadOnlyDictionary<string, string> parameters, string query);
+        public abstract Task<ApiResponse> HandleRequestAsync(HttpContext context, IReadOnlyDictionary<string, string> parameters, RouteValueDictionary routeValues, string query);
 
         protected ApiResponse OkResponse(DataTable dt)
         {

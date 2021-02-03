@@ -66,6 +66,7 @@ namespace GoogleChart.Net.Wrapper
                 case TypeCode.Single:
                 case TypeCode.Double:
                 case TypeCode.Int32:
+                case TypeCode.Int64:
                     columnToAdd = new Column(ColumnType.Number, label);
                     break;
                 case TypeCode.String:
