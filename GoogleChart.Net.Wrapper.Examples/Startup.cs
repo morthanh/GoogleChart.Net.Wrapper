@@ -26,6 +26,7 @@ namespace GoogleChart.Net.Wrapper.Examples
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<Api1Handler>();
+            services.AddScoped<ApiHandlerWithRouting>();
 
 
             services.AddRazorPages()
@@ -34,6 +35,7 @@ namespace GoogleChart.Net.Wrapper.Examples
             services.AddGoogleChartApi(opt =>
             {
                 opt.AddHandler<Api1Handler>("/test");
+                opt.AddHandler<ApiHandlerWithRouting>();
                 opt.IsDevelopment = true;
             });
 

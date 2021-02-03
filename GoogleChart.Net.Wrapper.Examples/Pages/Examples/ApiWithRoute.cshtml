@@ -1,0 +1,56 @@
+﻿@page "/Examples/ApiWithRoute"
+@using GoogleChart.Net.Wrapper.Options
+@{
+
+    var options = new LineChartOptions
+    {
+        Title = "My line chart with data from an data source api using route attribute on handler"
+    };
+
+
+}
+
+
+
+<div class="card">
+    <div class="card-body">
+        <div id="chartDiv"></div>
+    </div>
+</div>
+
+<script>
+    // Load the Visualization API and the corechart package.
+    google.charts.load('current', { 'packages': ['corechart'] });
+
+    // Set a callback to run when the Google Visualization API is loaded.
+    google.charts.setOnLoadCallback(initialize);
+
+
+    function initialize() {
+        var opts = { sendMethod: 'auto' };
+        // Replace the data source URL on next line with your data source URL.
+        var query = new google.visualization.Query('https://localhost:44370/api/gc/handlerWithRoute/42', opts);
+
+        // Optional request to return only column C and the sum of column B, grouped by C members.
+        //query.setQuery('select C, sum(B) group by C');
+
+        // Send the query with a callback function.
+        query.send(drawChart);
+    }
+
+    function drawChart(response) {
+
+        if (response.isError()) {
+            alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+            return;
+        }
+
+        // Create the data table.
+        var data = response.getDataTable();
+
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.LineChart(document.getElementById('chartDiv'));
+        chart.draw(data, @Html.Raw(options.ToJson()));
+    }
+</script>
+

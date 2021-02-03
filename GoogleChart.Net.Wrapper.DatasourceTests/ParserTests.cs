@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace GoogleChart.Net.Wrapper.Datasource.Query.Tests
 {
@@ -79,15 +81,65 @@ namespace GoogleChart.Net.Wrapper.Datasource.Query.Tests
         {
             string str = "select * where true";
 
-            using var memStream = new MemoryStream(Encoding.Default.GetBytes(str));
-            var scanner = new Scanner(memStream);
-            var parser = new Parser(scanner);
-            parser.Parse();
+            var root = QueryParserUtil.Parse(str);
 
-            var root = parser.Tree.Root;
             Assert.IsInstanceOf<WhereNode>(root[1]);
             var whereNode = (WhereNode)root[1];
             Assert.IsTrue(whereNode.Count == 1);
         }
+
+
+        [Test]
+        public void Bla()
+        {
+            var data = Enumerable.Range(0, 10).Select(x => new { Index = x, Name = "My value: " + x });
+
+            BlaT(data, new string[] { "Index" });
+
+        }
+
+        private void BlaT<T>(IEnumerable<T> data, string[] columns)
+        {
+
+            var t = data.GetType().GenericTypeArguments[0];
+            var propTypes = t.GetProperties();
+
+            //expression parameter, x => ...
+            var itemParam = Expression.Parameter(t, "x");
+
+            //where part
+            var left = Expression.PropertyOrField(itemParam, "Index");
+            var right = Expression.Constant(5);
+            var lessThan = Expression.LessThan(left, right);
+            var where = Expression.Lambda<Func<T, bool>>(lessThan, itemParam).Compile();
+
+
+            //select arguments
+            Expression.ListInit(
+                Expression.New(typeof(SelectorItem).GetConstructor(new[] { typeof(string), typeof(object), typeof(Type) })),
+                columns.Select(field=>Expression.ElementInit(
+
+                )
+            var args = new Expression[] { 
+                
+                Expression.Parameter(propTypes.Single(p => p.Name == x).PropertyType) };
+
+            var selectorItemArguments = columns.Select(x => );
+
+
+            //var selector = Expression.Call(typeof(Tuple), "Create", 
+            //    new[] {left.Type }, left);
+
+            var newSelectorItem = Expression.New(typeof(SelectorItem).GetConstructor(new[] {typeof(string), typeof(object), typeof(Type) }), selectorItemArguments);
+
+            var select = Expression.Lambda<Func<T, SelectorItem>>(newSelectorItem, itemParam).Compile();
+
+            var result = data.Where(where).Select(select).ToList();
+
+            //result.Select(x=>x.)
+        }
+
+
+        private record SelectorItem(string Name, object Value, Type Type);
     }
 }
