@@ -24,3 +24,5 @@ From here it is simple to extract the JSON needed to create the graph e.i. insid
         chart.draw(data, {});
     }
 	</script>
+
+For full examples please see the included example project
