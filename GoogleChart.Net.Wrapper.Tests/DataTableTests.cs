@@ -30,7 +30,7 @@ namespace GoogleChart.Net.Wrapper.Tests
         public void AddColumn_NoArgs_Serialized()
         {
             var dt = new DataTable();
-            dt.AddColumn(new Column());
+            dt.AddColumn();
 
             var json = dt.ToJson();
 
@@ -52,7 +52,7 @@ namespace GoogleChart.Net.Wrapper.Tests
         public void AddRow_CellInteger_Serialized()
         {
             var dt = new DataTable();
-            dt.AddColumn(new Column(ColumnType.Number));
+            dt.AddColumn(ColumnType.Number);
 
 
             dt.AddRow(Enumerable.Range(1, 1).Select(x => new Cell(x)));
@@ -69,7 +69,7 @@ namespace GoogleChart.Net.Wrapper.Tests
         public void AddRow_CellDateTime_Serialized()
         {
             var dt = new DataTable();
-            dt.AddColumn(new Column(ColumnType.Datetime));
+            dt.AddColumn(ColumnType.Datetime);
 
             var date = new DateTime(2000, 1, 1, 12, 30, 15);
 
@@ -86,7 +86,7 @@ namespace GoogleChart.Net.Wrapper.Tests
         public void AddRow_CellDate_Serialized()
         {
             var dt = new DataTable();
-            dt.AddColumn(new Column(ColumnType.Date));
+            dt.AddColumn(ColumnType.Date);
 
             var date = new DateTime(2000, 1, 1, 12, 30, 15);
 
@@ -100,45 +100,45 @@ namespace GoogleChart.Net.Wrapper.Tests
         }
 
 
-        [Test]
-        public void AddRow_CellTimeOfDayWithDateTime_Serialized()
-        {
-            var dt = new DataTable();
-            dt.AddColumn(new Column(ColumnType.Timeofday));
+        //[Test]
+        //public void AddRow_CellTimeOfDayWithDateTime_Serialized()
+        //{
+        //    var dt = new DataTable();
+        //    dt.AddColumn(ColumnType.Timeofday);
 
-            var date = new DateTime(2000, 1, 1, 12, 30, 15);
+        //    var date = new DateTime(2000, 1, 1, 12, 30, 15);
 
-            dt.AddRow(new List<Cell> { new Cell(date) });
+        //    dt.AddRow(new List<Cell> { new Cell(date) });
 
-            var json = dt.ToJson();
+        //    var json = dt.ToJson();
 
-            var jelem = JsonHelper.Deserialize(json);
-            var jValElem = jelem["rows"][0]["c"][0]["v"];
-            Assert.IsTrue((string)jValElem == "[\"12, 30, 15\"]");
-        }
+        //    var jelem = JsonHelper.Deserialize(json);
+        //    var jValElem = jelem["rows"][0]["c"][0]["v"];
+        //    Assert.IsTrue((string)jValElem == "[\"12, 30, 15\"]");
+        //}
 
-        [Test]
-        public void AddRow_CellTimeOfDayWithTimeSpan_Serialized()
-        {
-            var dt = new DataTable();
-            dt.AddColumn(new Column(ColumnType.Timeofday));
+        //[Test]
+        //public void AddRow_CellTimeOfDayWithTimeSpan_Serialized()
+        //{
+        //    var dt = new DataTable();
+        //    dt.AddColumn(ColumnType.Timeofday);
 
-            var date = new TimeSpan(12, 30, 15);
+        //    var date = new TimeSpan(12, 30, 15);
 
-            dt.AddRow(new List<Cell> { new Cell(date) });
+        //    dt.AddRow(new List<Cell> { new Cell(date) });
 
-            var json = dt.ToJson();
+        //    var json = dt.ToJson();
 
-            var jelem = JsonHelper.Deserialize(json);
-            var jrowElem = jelem["rows"][0]["c"][0]["v"];
-            Assert.IsTrue((string)jrowElem == "[\"12, 30, 15\"]");
-        }
+        //    var jelem = JsonHelper.Deserialize(json);
+        //    var jrowElem = jelem["rows"][0]["c"][0]["v"];
+        //    Assert.IsTrue((string)jrowElem == "[\"12, 30, 15\"]");
+        //}
 
         [Test]
         public void AddRow_CellBoolean_Serialized()
         {
             var dt = new DataTable();
-            dt.AddColumn(new Column(ColumnType.Boolean));
+            dt.AddColumn(ColumnType.Boolean);
 
             dt.AddRow(new List<Cell> { new Cell(true) });
 

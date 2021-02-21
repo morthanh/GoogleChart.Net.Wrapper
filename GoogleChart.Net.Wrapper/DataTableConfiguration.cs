@@ -1,4 +1,5 @@
 ﻿using GoogleChart.Net.Wrapper.Options;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace GoogleChart.Net.Wrapper
         private DataTable dataTable;
         private readonly List<Func<T, object>> valueSelectors = new List<Func<T, object>>();
         private ChartOptions? options = null;
-        private readonly List<Column> columns = new List<Column>();
+        private readonly List<ColumnMeta> columns = new List<ColumnMeta>();
         private List<string> columnlabels;
 
         internal DataTableConfiguration(IEnumerable<T> source)
@@ -47,6 +48,18 @@ namespace GoogleChart.Net.Wrapper
         {
             return AddColumn(null, valueSelector);
         }
+        public DataTableConfiguration<T> AddColumn(ColumnType columnType, Func<T, object> valueSelector)
+        {
+            return AddColumn(columnType, null, null, null, null, null, valueSelector);
+        }
+        public DataTableConfiguration<T> AddColumn(ColumnType columnType, string? label, Func<T, object> valueSelector)
+        {
+            return AddColumn(columnType, label, null, null, null, null, valueSelector);
+        }
+        public DataTableConfiguration<T> AddColumn(ColumnType columnType, ColumnRole? role, Func<T, object> valueSelector)
+        {
+            return AddColumn(columnType, null, null, role, null, null, valueSelector);
+        }
 
         public DataTableConfiguration<T> AddColumn<TReturn>(string? label, Func<T, TReturn> valueSelector)
         {
@@ -57,9 +70,17 @@ namespace GoogleChart.Net.Wrapper
 
             var returnType = typeof(TReturn);
 
+            if (returnType.IsConstructedGenericType)
+            {
+                var nullableType = Nullable.GetUnderlyingType(returnType);
+                if (nullableType != null)
+                {
+                    returnType = nullableType;
+                }
+            }
+
             var returnTypeCode = Type.GetTypeCode(returnType);
 
-            Column columnToAdd;
 
             switch (returnTypeCode)
             {
@@ -67,34 +88,24 @@ namespace GoogleChart.Net.Wrapper
                 case TypeCode.Double:
                 case TypeCode.Int32:
                 case TypeCode.Int64:
-                    columnToAdd = new Column(ColumnType.Number, label);
-                    break;
+                    return AddColumn(ColumnType.Number, label, null, null, null, null, c => valueSelector(c));
                 case TypeCode.String:
-                    columnToAdd = new Column(ColumnType.String, label);
-                    break;
+                    return AddColumn(ColumnType.String, label, null, null, null, null, c => valueSelector(c));
                 case TypeCode.DateTime:
-                    columnToAdd = new Column(ColumnType.Datetime, label);
-                    break;
+                    return AddColumn(ColumnType.Datetime, label, null, null, null, null, c => valueSelector(c));
                 case TypeCode.Object when returnType.FullName is "System.TimeSpan":
-                    columnToAdd = new Column(ColumnType.Timeofday, label);
-                    break;
+                    return AddColumn(ColumnType.Timeofday, label, null, null, null, null, c => valueSelector(c));
                 default:
                     throw new NotSupportedException($"Returtype '{returnTypeCode}' is not yet supported");
             }
-
-            return AddColumn(columnToAdd, c => valueSelector(c));
         }
 
 
-        public DataTableConfiguration<T> AddColumn(Column column, Func<T, object> valueSelector)
+        private DataTableConfiguration<T> AddColumn(ColumnType columnType, string? label, string? id, ColumnRole? role, Type? valueType, Action<JsonWriter>? valueWriter, Func<T, object> valueSelector)
         {
-            columns.Add(column);
+            columns.Add(new ColumnMeta(id, label, columnType,role,valueType,valueWriter));
             valueSelectors.Add(valueSelector);
             return this;
-        }
-        public DataTableConfiguration<T> AddColumn(ColumnType columnType, Func<T, object> valueSelector)
-        {
-            return AddColumn(new Column(columnType), valueSelector);
         }
 
 

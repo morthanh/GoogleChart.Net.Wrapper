@@ -36,8 +36,8 @@ namespace GoogleChart.Net.Wrapper.Extensions.Tests
             var dt = Enumerable.Range(0, 10).Select(x => new { Name = "Test", Value = x })
                 .ToDataTable(config =>
                 {
-                    config.AddColumn(new Column(ColumnType.String), x => x.Name);
-                    config.AddColumn(new Column(ColumnType.Number), x => x.Value);
+                    config.AddColumn(ColumnType.String, x => x.Name);
+                    config.AddColumn(ColumnType.Number, x => x.Value);
                 });
 
             var json = dt.ToJson();
@@ -55,8 +55,8 @@ namespace GoogleChart.Net.Wrapper.Extensions.Tests
             var dt = Enumerable.Range(0, 100000).Select(x => new { Name = "Test", Value = x })
                 .ToDataTable(config =>
                 {
-                    config.AddColumn(new Column(ColumnType.String), x => x.Name);
-                    config.AddColumn(new Column(ColumnType.Number), x => x.Value);
+                    config.AddColumn(ColumnType.String, x => x.Name);
+                    config.AddColumn(ColumnType.Number, x => x.Value);
                 });
 
             var json = dt.ToJson();

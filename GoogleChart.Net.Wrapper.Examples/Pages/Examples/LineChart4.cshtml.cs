@@ -15,12 +15,12 @@ namespace GoogleChart.Net.Wrapper.Examples.Pages.Examples
         {
             var data = Data.TestData.Data2Dim.ToDataTable(conf =>
             {
-                conf.AddColumn(new Column(ColumnType.Number), x => x.Item1);
-                conf.AddColumn(new Column(ColumnType.Number), x => x.Item2);
-                conf.AddColumn(new Column(ColumnType.Boolean, ColumnRole.Emphasis), x => x.Item2 > 20);
-                conf.AddColumn(new Column(ColumnType.Boolean, ColumnRole.Certainty), x => x.Item2 < 30);
-                conf.AddColumn(new Column(ColumnType.Number, ColumnRole.Interval), x => x.Item2 * 0.8);
-                conf.AddColumn(new Column(ColumnType.Number, ColumnRole.Interval), x => x.Item2 * 1.2);
+                conf.AddColumn(ColumnType.Number, x => x.Item1);
+                conf.AddColumn(ColumnType.Number, x => x.Item2);
+                conf.AddColumn(ColumnType.Boolean, ColumnRole.Emphasis, x => x.Item2 > 20);
+                conf.AddColumn(ColumnType.Boolean, ColumnRole.Certainty, x => x.Item2 < 30);
+                conf.AddColumn(ColumnType.Number, ColumnRole.Interval, x => x.Item2 * 0.8);
+                conf.AddColumn(ColumnType.Number, ColumnRole.Interval, x => x.Item2 * 1.2);
         });
 
             DataJson = data.ToJson();

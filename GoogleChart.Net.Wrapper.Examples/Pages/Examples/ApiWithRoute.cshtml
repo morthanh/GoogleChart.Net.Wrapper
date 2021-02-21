@@ -18,6 +18,30 @@
     </div>
 </div>
 
+
+<div class="card">
+    <h5 class="card-header">Code behind</h5>
+    <div class="card-body">
+        <pre><code class="csharp" id="codeblock">
+[Route("handlerWithRoute/{myIntParam:int}")]
+public class ApiHandlerWithRouting : GoogleChartApiHandler
+{
+    public override Task&lt;ApiResponse&gt; HandleRequestAsync(HttpContext context, IReadOnlyDictionary&lt;string, string&gt; parameters, RouteValueDictionary routeValues, string query)
+    {
+        var rand = new Random();
+        var dataTable = Enumerable.Range(0, int.Parse((string)routeValues["myIntParam"])).ToDataTable(conf =>
+        {
+            conf.AddColumn(x => x);
+            conf.AddColumn(x => rand.Next(0, 100));
+        });
+
+        return Task.FromResult(OkResponse(dataTable));
+    }
+}
+            </code></pre>
+    </div>
+</div>
+
 <script>
     // Load the Visualization API and the corechart package.
     google.charts.load('current', { 'packages': ['corechart'] });
