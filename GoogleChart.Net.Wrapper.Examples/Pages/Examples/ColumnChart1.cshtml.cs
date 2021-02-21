@@ -17,12 +17,12 @@ namespace GoogleChart.Net.Wrapper.Examples.Pages.Examples
             {
                 int i = 1;
                 conf.AddColumn(x => $"Group {i++}");
-                conf.AddColumn(new Column(ColumnType.Number, "Cars"), x => x.Item1);
-                conf.AddColumn(new Column(ColumnType.Number, "Houses"), x => x.Item2);
-                conf.AddColumn(new Column(ColumnType.Number, "Dogs"), x => x.Item3);
-                conf.AddColumn(new Column(ColumnType.Number, "Ants"), x => x.Item4);
-                conf.AddColumn(new Column(ColumnType.Number, ColumnRole.Interval), x => x.Item4*0.8);
-                conf.AddColumn(new Column(ColumnType.Number, ColumnRole.Interval), x => x.Item4*1.2);
+                conf.AddColumn(ColumnType.Number, "Cars", x => x.Item1);
+                conf.AddColumn(ColumnType.Number, "Houses", x => x.Item2);
+                conf.AddColumn(ColumnType.Number, "Dogs", x => x.Item3);
+                conf.AddColumn(ColumnType.Number, "Ants", x => x.Item4);
+                conf.AddColumn(ColumnType.Number, ColumnRole.Interval, x => x.Item4*0.8);
+                conf.AddColumn(ColumnType.Number, ColumnRole.Interval, x => x.Item4*1.2);
                 conf.WithOptions<ColumnChartOptions>(opt =>
                 {
                     opt.Height = 200;

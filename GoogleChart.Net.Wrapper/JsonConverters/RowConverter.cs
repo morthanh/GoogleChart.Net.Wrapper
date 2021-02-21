@@ -22,10 +22,10 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
             int i = 0;
             foreach (var cell in row.Cells)
             {
-                var columnType = row.DataTable.ColumnTypes[i];
+                var columnType = row.DataTable.Columns[i];
                 writer.WriteStartObject();
 
-                cell.WriteValue(row.DataTable.ColumnTypes[i], writer, row.IsLabels);
+                //cell.WriteValue(row.DataTable.Columns[i], writer, row.IsLabels);
 
                 writer.WriteEndObject();
                 i++;

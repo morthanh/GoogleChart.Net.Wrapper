@@ -18,7 +18,7 @@ namespace GoogleChart.Net.Wrapper
     public class DataTable
     {
         private readonly List<Row>? rows;
-        private readonly List<Column> columns = new List<Column>();
+        private readonly List<ColumnMeta> columns = new List<ColumnMeta>();
 
         public DataTable()
         {
@@ -44,10 +44,9 @@ namespace GoogleChart.Net.Wrapper
         }
 
         [JsonIgnore]
-        public IList<ColumnType> ColumnTypes { get; set; } = new List<ColumnType>();
 
-        [JsonProperty("cols")]
-        public IReadOnlyList<Column> Columns => columns.AsReadOnly();
+        public IReadOnlyList<ColumnMeta> Columns => columns.AsReadOnly();
+
         [JsonIgnore]
         public IEnumerable<object> Values { get; }
 
@@ -57,34 +56,65 @@ namespace GoogleChart.Net.Wrapper
         internal List<string>? ColumnLabels { get; set; }
 
 
-        /// <summary>
-        /// Add a column to the <see cref="DataTable"/>
-        /// </summary>
-        /// <param name="column"></param>
-        public void AddColumn(Column column)
+        public void AddColumn()
         {
-
-            if (string.IsNullOrEmpty(column.Id))
-            {
-                column.Id = "Column" + Columns.Count;
-            }
-
-            if (Columns.Any(x => x.Id == column.Id))
-            {
-                throw new Exception($"Column id '{column.Id}' is already used");
-            }
-
-            columns.Add(column);
-            ColumnTypes.Add(column.ColumnType);
+            AddColumn(ColumnType.String, null, null, null, null, null);
         }
+
         public void AddColumn(ColumnType columnType)
         {
-            AddColumn(new Column(columnType));
+            AddColumn(columnType, null, null, null, null, null);
         }
+
         public void AddColumn(ColumnType columnType, string label)
         {
-            AddColumn(new Column(columnType, label));
+            AddColumn(columnType, label, null, null, null, null);
         }
+
+        public void AddColumn(ColumnType columnType, string label, string id)
+        {
+            AddColumn(columnType, label, id, null, null, null);
+        }
+
+        public void AddColumn(ColumnType columnType, string label, string id, Action<JsonWriter> valueWriter)
+        {
+            AddColumn(columnType, label, id, null, null, valueWriter);
+        }
+
+        public void AddColumn(ColumnType columnType, ColumnRole role)
+        {
+            AddColumn(columnType, null, null, role, null, null);
+        }
+
+        public void AddColumn(ColumnType columnType, ColumnRole role, string id)
+        {
+            AddColumn(columnType, null, id, role, null, null);
+        }
+
+
+
+
+        internal void AddColumn(ColumnType columnType, string? label, string? id, ColumnRole? role, Type? valueType, Action<JsonWriter>? valueWriter)
+        {
+            AddColumn(new ColumnMeta(id, label, columnType, role, valueType, valueWriter));
+        }
+
+        internal void AddColumn(ColumnMeta columnMeta)
+        {
+            if (string.IsNullOrEmpty(columnMeta.Id))
+            {
+                columnMeta.Id = "Column" + Columns.Count;
+            }
+
+            if (Columns.Any(x => x.Id == columnMeta.Id))
+            {
+                throw new Exception($"Column id '{columnMeta.Id}' is already used");
+            }
+
+            columns.Add(columnMeta);
+        }
+
+
 
         public void AddColumnLabels(IEnumerable<string> labels)
         {

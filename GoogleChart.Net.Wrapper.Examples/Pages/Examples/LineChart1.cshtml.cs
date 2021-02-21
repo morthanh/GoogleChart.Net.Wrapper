@@ -18,8 +18,8 @@ namespace GoogleChart.Net.Wrapper.Examples.Pages
         {
             var data = Data.TestData.Data2Dim.ToDataTable(conf =>
             {
-                conf.AddColumn(new Column(ColumnType.Number), x => x.Item1);
-                conf.AddColumn(new Column(ColumnType.Number), x => x.Item2);
+                conf.AddColumn(ColumnType.Number, x => x.Item1);
+                conf.AddColumn(ColumnType.Number, x => x.Item2);
             });
 
             DataJson = data.ToJson();
