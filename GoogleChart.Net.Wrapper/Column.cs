@@ -1,6 +1,7 @@
 ﻿using GoogleChart.Net.Wrapper.JsonConverters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
 
 namespace GoogleChart.Net.Wrapper
 {
@@ -8,7 +9,7 @@ namespace GoogleChart.Net.Wrapper
     /// <summary>
     /// Represents a column for use with <see cref="DataTable"/>. 
     /// </summary>
-    public class Column
+    public class ColumnMeta
     {
 
 
@@ -29,28 +30,33 @@ namespace GoogleChart.Net.Wrapper
         //[JsonConverter(typeof(StringEnumConverter))]
         public ColumnRole? Role { get; }
 
-        public Column() : this(ColumnType.String, null, null, null) { }
+        [JsonIgnore]
+        public Type ValueType { get;  }
 
-        public Column(ColumnType columnType) : this(columnType, null, null, null) { }
+        [JsonIgnore]
+        public Action<JsonWriter>? WriterAction { get; }
 
-        public Column(ColumnType columnType, ColumnRole columnRole) : this(columnType, null, null, columnRole) { }
-
-        public Column(ColumnType columnType, string? label) : this(columnType, label, null, null) { }
-
-        public Column(ColumnType columnType, string? label, string? id) : this(columnType, label, id, null) { }
-
-        public Column(ColumnType columnType, string? label, string? id, ColumnRole? role)
+        internal ColumnMeta(string? id, string? label, ColumnType columnType, ColumnRole? role, Type? valueType, Action<JsonWriter>? writerAction)
         {
-            ColumnType = columnType;
             Id = id;
             Label = label;
+            ColumnType = columnType;
             Role = role;
+            ValueType = valueType ?? GetDefaultColumnValueType(columnType);
+            WriterAction = writerAction;
         }
-
-
-
-
-
-
+        private Type GetDefaultColumnValueType(ColumnType columnType)
+        {
+            return columnType switch
+            {
+                ColumnType.String => typeof(string),
+                ColumnType.Number => typeof(double),
+                ColumnType.Boolean => typeof(bool),
+                ColumnType.Date => typeof(DateTime),
+                ColumnType.Datetime => typeof(DateTime),
+                ColumnType.Timeofday => typeof(TimeSpan),
+                _ => throw new NotImplementedException(),
+            };
+        }
     }
 }

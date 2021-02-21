@@ -7,29 +7,37 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
 
     public sealed class ChartDataTableConverter : JsonConverter<DataTable>
     {
-        public override DataTable ReadJson(JsonReader reader, Type objectType, DataTable existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override DataTable ReadJson(JsonReader reader, Type objectType, DataTable? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             throw new NotImplementedException();
         }
 
 
-        public override void WriteJson(JsonWriter writer, DataTable dt, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, DataTable? dt, JsonSerializer serializer)
         {
+            if (dt == null)
+            { 
+                return;
+            }
+
             if (dt.ColumnLabels != null && dt.Columns.Count != dt.ColumnLabels.Count)
             {
                 throw new Exception("Number of column labels does not equal number of columns");
             }
 
 
+            var columnsMeta = dt.Columns;
+
             writer.WriteStartObject();
 
             //write cols
             writer.WritePropertyName("cols");
-            serializer.Serialize(writer, dt.Columns, typeof(IList<Column>));
+            WriteCols(writer, columnsMeta, serializer);
 
 
             //write rows
-            WriteRows(writer, dt.Values, dt.ColumnTypes, dt.ColumnLabels);
+            writer.WritePropertyName("rows");
+            WriteRows(writer, dt.Values, columnsMeta, dt.ColumnLabels);
 
 
             writer.WriteEndObject();
@@ -37,13 +45,23 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
 
 
 
+        private void WriteCols(JsonWriter writer, IReadOnlyList<ColumnMeta> columns, JsonSerializer serializer)
+        {
+            writer.WriteStartArray();
+            foreach (var column in columns)
+            {
+                serializer.Serialize(writer, column);
+            }
+            writer.WriteEndArray();
+        }
 
-        private void WriteRows(JsonWriter writer, IEnumerable<object> valuesSource, IList<ColumnType> columnTypes, IList<string> columnLabels)
+
+
+        private void WriteRows(JsonWriter writer, IEnumerable<object> valuesSource, IReadOnlyList<ColumnMeta> columns, IList<string> columnLabels)
         {
             int i = 0;
-            int numColumns = columnTypes.Count;
+            int numColumns = columns.Count;
 
-            writer.WritePropertyName("rows");
 
             writer.WriteStartArray();
 
@@ -56,7 +74,7 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
                 foreach (var label in columnLabels)
                 {
                     writer.WriteStartObject();
-                    WriteValue(label, columnTypes[i % numColumns], writer, true);
+                    WriteLabelValue(label, writer);
                     writer.WriteEndObject();
                 }
 
@@ -66,110 +84,106 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
 
             foreach (var val in valuesSource)
             {
-                //if (val is Row row)
-                //{
-                //    foreach (var cell in row.Cells)
-                //    {
-                //        if (i % numColumns == 0)
-                //        {
-                //            writer.WriteStartObject();
-                //            writer.WritePropertyName("c");
-                //            writer.WriteStartArray();
-                //        }
 
-                //        writer.WriteStartObject();
-                //        WriteValue(cell, columnTypes[i % numColumns], writer, false);
-                //        writer.WriteEndObject();
-
-                //        if (i % numColumns == numColumns - 1)
-                //        {
-                //            writer.WriteEndArray();
-                //            writer.WriteEndObject();
-                //        }
-
-                //        i++;
-                //    }
-                //}
-                //else
-                //{
-                    if (i % numColumns == 0)
-                    {
-                        writer.WriteStartObject();
-                        writer.WritePropertyName("c");
-                        writer.WriteStartArray();
-                    }
-
+                if (i % numColumns == 0)
+                {
                     writer.WriteStartObject();
-                    WriteValue(val, columnTypes[i % numColumns], writer, false);
+                    writer.WritePropertyName("c");
+                    writer.WriteStartArray();
+                }
+
+                writer.WriteStartObject();
+                WriteValue(val, columns[i % numColumns], writer);
+                writer.WriteEndObject();
+
+                if (i % numColumns == numColumns - 1)
+                {
+                    writer.WriteEndArray();
                     writer.WriteEndObject();
+                }
 
-                    if (i % numColumns == numColumns - 1)
-                    {
-                        writer.WriteEndArray();
-                        writer.WriteEndObject();
-                    }
+                i++;
 
-                    i++;
-                //}
             }
 
             writer.WriteEndArray();
 
         }
 
-        internal void WriteValue(object v, ColumnType columnType, JsonWriter writer, bool isLabel)
+
+        internal void WriteLabelValue(object v, JsonWriter writer)
         {
-            if (isLabel)
+            writer.WritePropertyName("v");
+            writer.WriteValue(v.ToString());
+        }
+
+        internal void WriteValue(object v, ColumnMeta columnMeta, JsonWriter writer)
+        {
+            if (columnMeta is null)
             {
-                writer.WritePropertyName("v");
-                writer.WriteValue(v.ToString());
+                throw new ArgumentNullException(nameof(columnMeta));
             }
-            else if (v is Cell cell)
+
+            writer.WritePropertyName("v");
+            if (v is null)
             {
-                cell.WriteValue(columnType, writer, isLabel);
+                writer.WriteNull();
+                return;
+            }
+
+            object val = v;
+            string? formattedVal;
+
+            if (v is Cell cell)
+            {
+                val = cell.Value;
+                formattedVal = cell.Formatted;
+            }
+
+
+            if (columnMeta.WriterAction != null)
+            {
+                columnMeta.WriterAction(writer);
             }
             else
             {
-                writer.WritePropertyName("v");
-
-                switch (columnType)
+                switch (columnMeta.ColumnType)
                 {
                     case ColumnType.Number:
-                        switch (Type.GetTypeCode(v.GetType()))
+
+                        var nullValType = Nullable.GetUnderlyingType(columnMeta.ValueType);
+                        if (nullValType != null && val is null)
                         {
-                            case TypeCode.Decimal:
-                                writer.WriteValue((decimal)v);
-                                break;
-                            case TypeCode.Double:
-                                writer.WriteValue((double)v);
-                                break;
-                            case TypeCode.Single:
-                                writer.WriteValue((float)v);
-                                break;
-                            case TypeCode.Int32:
-                                writer.WriteValue((int)v);
-                                break;
-                            default:
-                                throw new NotSupportedException("Unsupported type " + v.GetType().FullName);
+                            writer.WriteNull();
                         }
+                        else
+                        {
+                            if (val is decimal dec) writer.WriteValue(dec);
+                            else if (val is double dou) writer.WriteValue(dou);
+                            else if (val is float flo) writer.WriteValue(flo);
+                            else if (val is int i) writer.WriteValue(i);
+                            else if (val is long l) writer.WriteValue(l);
+                            else throw new NotSupportedException("Unsupported type " + v.GetType().FullName);
+                        }
+
                         break;
                     case ColumnType.String:
-                        writer.WriteValue( v.ToString());
+                        writer.WriteValue(val.ToString());
                         break;
                     case ColumnType.Boolean:
-                        writer.WriteValue((bool)v);
+                        writer.WriteValue((bool)val);
                         break;
                     case ColumnType.Date:
-                        var d = (DateTime)v;
-                        writer.WriteValue( string.Format("Date({0}, {1}, {2})", d.Year, d.Month - 1, d.Day));
+                        var d = (DateTime)val;
+                        writer.WriteValue(string.Format("Date({0}, {1}, {2})", d.Year, d.Month - 1, d.Day));
                         break;
                     case ColumnType.Datetime:
-                        var dt = (DateTime)v;
+                        var dt = (DateTime)val;
                         writer.WriteValue(string.Format("Date({0}, {1}, {2}, {3}, {4}, {5})", dt.Year, dt.Month - 1, dt.Day,
                                                     dt.Hour, dt.Minute, dt.Second));
                         break;
                     case ColumnType.Timeofday:
-                        var tod = v is DateTime time ? time.TimeOfDay : (TimeSpan)v;
+                        var tod = val is DateTime time ? time.TimeOfDay : (TimeSpan)val;
 
                         writer.WriteStartArray();
                         writer.WriteValue(tod.Hours);
@@ -181,10 +195,10 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
                         //writer.WriteRaw( string.Format("[{0}, {1}, {2}]", tod.Hours, tod.Minutes, tod.Seconds));
                         break;
                     default:
-                        throw new Exception($"Columntype '{columnType}' not supported");
+                        throw new Exception($"Columntype '{columnMeta.ColumnType}' not supported");
                 }
-
             }
+
 
 
         }

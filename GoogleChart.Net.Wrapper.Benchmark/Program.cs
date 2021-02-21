@@ -66,8 +66,8 @@ namespace GoogleChart.Net.Wrapper.Benchmark
         {
             var dt = new DataTable();
 
-            dt.AddColumn(new Column(ColumnType.Number));
-            dt.AddColumn(new Column(ColumnType.Number));
+            dt.AddColumn(ColumnType.Number);
+            dt.AddColumn(ColumnType.Number);
 
             foreach (var point in xyPoints)
             {

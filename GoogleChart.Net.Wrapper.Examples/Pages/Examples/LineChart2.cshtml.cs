@@ -19,8 +19,10 @@ namespace GoogleChart.Net.Wrapper.Examples.Pages
             int i = 0;
             var data = Data.TestData.Data2DimRandom.ToDataTable(conf =>
             {
-                conf.AddColumn(new Column(ColumnType.Number), x => i++);
-                conf.AddColumn(new Column(ColumnType.Number), x => x.Item1);
+                conf.AddColumn(ColumnType.Number, x => i++);
+                conf.AddColumn(ColumnType.Number, x => i++);
+                conf.AddColumn(x => x.Item1 < 10 ? default(int?) : x.Item1);
+                conf.AddColumn(ColumnType.Number, x => x.Item1 < 20 ? default(int?) : x.Item1 + 5);
                 conf.AddColumn(x => x.Item2);
             });
 

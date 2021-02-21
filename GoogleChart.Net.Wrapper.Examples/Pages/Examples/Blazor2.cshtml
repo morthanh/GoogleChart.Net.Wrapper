@@ -6,8 +6,8 @@
 @{
     int i = 0;
     var dt = new DataTable();
-    dt.AddColumn(new Column());
-    dt.AddColumn(new Column(ColumnType.Number));
+    dt.AddColumn();
+    dt.AddColumn(ColumnType.Number);
     Data.TestData.Data1Dim.ToList().ForEach(x => dt.AddRow(new Cell[] { new Cell(++i), new Cell(x) }));
 
     dt = Data.TestData.Data1Dim.ToDataTable(conf =>
