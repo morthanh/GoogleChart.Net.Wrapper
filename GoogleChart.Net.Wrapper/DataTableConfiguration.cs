@@ -8,13 +8,14 @@ using System.Text;
 namespace GoogleChart.Net.Wrapper
 {
 
+
+
     public class DataTableConfiguration<T>
     {
         private readonly IEnumerable<T> source;
         private DataTable dataTable;
-        private readonly List<Func<T, object>> valueSelectors = new List<Func<T, object>>();
         private ChartOptions? options = null;
-        private readonly List<ColumnMeta> columns = new List<ColumnMeta>();
+        private readonly List<ColumnMeta<T>> columns = new List<ColumnMeta<T>>();
         private List<string> columnlabels;
 
         internal DataTableConfiguration(IEnumerable<T> source)
@@ -46,22 +47,15 @@ namespace GoogleChart.Net.Wrapper
 
         public DataTableConfiguration<T> AddColumn<TReturn>(Func<T, TReturn> valueSelector)
         {
-            return AddColumn(null, valueSelector);
-        }
-        public DataTableConfiguration<T> AddColumn(ColumnType columnType, Func<T, object> valueSelector)
-        {
-            return AddColumn(columnType, null, null, null, null, null, valueSelector);
-        }
-        public DataTableConfiguration<T> AddColumn(ColumnType columnType, string? label, Func<T, object> valueSelector)
-        {
-            return AddColumn(columnType, label, null, null, null, null, valueSelector);
-        }
-        public DataTableConfiguration<T> AddColumn(ColumnType columnType, ColumnRole? role, Func<T, object> valueSelector)
-        {
-            return AddColumn(columnType, null, null, role, null, null, valueSelector);
+            return AddColumn(null, valueSelector, null);
         }
 
-        public DataTableConfiguration<T> AddColumn<TReturn>(string? label, Func<T, TReturn> valueSelector)
+        public DataTableConfiguration<T> AddColumn<TReturn>(Func<T, TReturn> valueSelector, Func<T, string> formattedSelector)
+        {
+            return AddColumn(null, valueSelector, formattedSelector);
+        }
+
+        public DataTableConfiguration<T> AddColumn<TReturn>(string? label, Func<T, TReturn> valueSelector, Func<T, string>? formattedSelector)
         {
             if (valueSelector is null)
             {
@@ -88,23 +82,36 @@ namespace GoogleChart.Net.Wrapper
                 case TypeCode.Double:
                 case TypeCode.Int32:
                 case TypeCode.Int64:
-                    return AddColumn(ColumnType.Number, label, null, null, null, null, c => valueSelector(c));
+                    return AddColumn(ColumnType.Number, label, null, null, null, null, c => valueSelector(c)!, formattedSelector);
+                case TypeCode.Boolean:
+                    return AddColumn(ColumnType.Boolean, label, null, null, null, null, c => valueSelector(c)!, formattedSelector);
                 case TypeCode.String:
-                    return AddColumn(ColumnType.String, label, null, null, null, null, c => valueSelector(c));
+                    return AddColumn(ColumnType.String, label, null, null, null, null, c => valueSelector(c)!, formattedSelector);
                 case TypeCode.DateTime:
-                    return AddColumn(ColumnType.Datetime, label, null, null, null, null, c => valueSelector(c));
+                    return AddColumn(ColumnType.Datetime, label, null, null, null, null, c => valueSelector(c)!, formattedSelector);
                 case TypeCode.Object when returnType.FullName is "System.TimeSpan":
-                    return AddColumn(ColumnType.Timeofday, label, null, null, null, null, c => valueSelector(c));
+                    return AddColumn(ColumnType.Timeofday, label, null, null, null, null, c => valueSelector(c)!, formattedSelector);
                 default:
                     throw new NotSupportedException($"Returtype '{returnTypeCode}' is not yet supported");
             }
         }
 
-
-        private DataTableConfiguration<T> AddColumn(ColumnType columnType, string? label, string? id, ColumnRole? role, Type? valueType, Action<JsonWriter>? valueWriter, Func<T, object> valueSelector)
+        public DataTableConfiguration<T> AddColumn(ColumnType columnType, Func<T, object> valueSelector)
         {
-            columns.Add(new ColumnMeta(id, label, columnType,role,valueType,valueWriter));
-            valueSelectors.Add(valueSelector);
+            return AddColumn(columnType, null, null, null, null, null, valueSelector, null);
+        }
+        public DataTableConfiguration<T> AddColumn(ColumnType columnType, string? label, Func<T, object> valueSelector)
+        {
+            return AddColumn(columnType, label, null, null, null, null, valueSelector, null);
+        }
+        public DataTableConfiguration<T> AddColumn(ColumnType columnType, ColumnRole? role, Func<T, object> valueSelector)
+        {
+            return AddColumn(columnType, null, null, role, null, null, valueSelector, null);
+        }
+
+        private DataTableConfiguration<T> AddColumn(ColumnType columnType, string? label, string? id, ColumnRole? role, Type? valueType, Action<JsonWriter>? valueWriter, Func<T, object> valueSelector, Func<T, string>? formattedSelector)
+        {
+            columns.Add(new ColumnMeta<T>(id, label, columnType,role,valueType,valueWriter, valueSelector, formattedSelector));
             return this;
         }
 
@@ -121,17 +128,30 @@ namespace GoogleChart.Net.Wrapper
             return dataTable;
         }
 
-        private IEnumerable<object> ValueSourceEnumerator()
+        private IEnumerable<ValueSourceItem<T>> ValueSourceEnumerator()
         {
             int cIdx;
             foreach (var elem in source)
             {
-                for (cIdx = 0; cIdx < valueSelectors.Count; cIdx++)
+                for (cIdx = 0; cIdx < columns.Count; cIdx++)
                 {
-                    yield return valueSelectors[cIdx](elem);
+                    yield return new ValueSourceItem<T>(columns[cIdx], elem);
                 }
             }
         }
 
+    }
+
+
+    internal struct ValueSourceItem<T>
+    {
+        public ValueSourceItem(ColumnMeta<T> columnMeta, T value)
+        {
+            ColumnMeta = columnMeta;
+            Value = value;
+        }
+
+        internal ColumnMeta<T> ColumnMeta { get; }
+        internal T Value { get; }
     }
 }
