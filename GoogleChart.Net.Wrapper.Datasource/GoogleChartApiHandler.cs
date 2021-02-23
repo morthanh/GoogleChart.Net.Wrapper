@@ -10,7 +10,7 @@ namespace GoogleChart.Net.Wrapper.Datasource
 
         public abstract Task<ApiResponse> HandleRequestAsync(HttpContext context, IReadOnlyDictionary<string, string> parameters, RouteValueDictionary routeValues, string query);
 
-        protected ApiResponse OkResponse(DataTable dt)
+        protected ApiResponse OkResponse(DataTableBase dt)
         {
             return new ApiResponse
             {
@@ -19,7 +19,7 @@ namespace GoogleChart.Net.Wrapper.Datasource
             };
         }
 
-        protected ApiResponse WarningResponse(DataTable dt, IEnumerable<ResponseWarning> warnings)
+        protected ApiResponse WarningResponse(DataTableBase dt, IEnumerable<ResponseWarning> warnings)
         {
             return new ApiResponse
             {

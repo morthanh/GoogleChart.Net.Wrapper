@@ -28,7 +28,8 @@ namespace GoogleChart.Net.Wrapper
                     {
                         NamingStrategy = new CamelCaseNamingStrategy ()
                     }
-                }
+                },
+                ContractResolver = new CustomContractResolver()
             };
         }
 

@@ -3,7 +3,7 @@
 @using GoogleChart.Net.Wrapper.Options
 @code {
 
-    private DataTable MyDataTable { get; set; }
+    private DataTableBase MyDataTable { get; set; }
     private ChartType ChartType { get; set; } = ChartType.LineChart;
     private IEnumerable<(int Index, int Val1, int Val2)> dataPoints;
 

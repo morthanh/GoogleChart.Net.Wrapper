@@ -60,22 +60,6 @@ namespace GoogleChart.Net.Wrapper.Benchmark
             var json = System.Text.Json.JsonSerializer.Serialize(t);
         }
 
-        
-        [Benchmark]
-        public void Manuel()
-        {
-            var dt = new DataTable();
-
-            dt.AddColumn(ColumnType.Number);
-            dt.AddColumn(ColumnType.Number);
-
-            foreach (var point in xyPoints)
-            {
-                dt.AddRow(new Cell[] { new Cell(point.Item1), new Cell(point.Item2) });
-            }
-
-            var json = dt.ToJson();
-        }
 
         [Benchmark]
         public void LinqExtension()

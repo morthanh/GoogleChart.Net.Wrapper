@@ -13,17 +13,16 @@ namespace GoogleChart.Net.Wrapper
     public class DataTableConfiguration<T>
     {
         private readonly IEnumerable<T> source;
-        private DataTable dataTable;
         private ChartOptions? options = null;
         private readonly List<ColumnMeta<T>> columns = new List<ColumnMeta<T>>();
-        private List<string> columnlabels;
+        private List<string>? columnlabels;
 
         internal DataTableConfiguration(IEnumerable<T> source)
         {
             this.source = source;
         }
 
-        internal DataTable DataTable => dataTable;
+        internal DataTable<T> DataTable => Build();
 
         /// <summary>
         /// Adds a chart options instance used when serializing. Use this to customize the appearance of the chart. 
@@ -53,6 +52,11 @@ namespace GoogleChart.Net.Wrapper
         public DataTableConfiguration<T> AddColumn<TReturn>(Func<T, TReturn> valueSelector, Func<T, string> formattedSelector)
         {
             return AddColumn(null, valueSelector, formattedSelector);
+        }
+
+        public DataTableConfiguration<T> AddColumn<TReturn>(string? label, Func<T, TReturn> valueSelector)
+        {
+            return AddColumn(label, valueSelector, null);
         }
 
         public DataTableConfiguration<T> AddColumn<TReturn>(string? label, Func<T, TReturn> valueSelector, Func<T, string>? formattedSelector)
@@ -118,9 +122,9 @@ namespace GoogleChart.Net.Wrapper
 
 
 
-        public DataTable Build()
+        private DataTable<T> Build()
         {
-            dataTable = new DataTable(ValueSourceEnumerator()) { Options = options, ColumnLabels = columnlabels };
+            var dataTable = new DataTable<T>(ValueSourceEnumerator()) { Options = options, ColumnLabels = columnlabels };
             foreach (var column in columns)
             {
                 dataTable.AddColumn(column);
@@ -148,10 +152,14 @@ namespace GoogleChart.Net.Wrapper
         public ValueSourceItem(ColumnMeta<T> columnMeta, T value)
         {
             ColumnMeta = columnMeta;
-            Value = value;
+            ValueRaw = value;
+            Value = columnMeta.ValueSelector(value);
+            ValueFormatted = columnMeta.FormattedSelector != null ? columnMeta.FormattedSelector(value) : null;
         }
 
         internal ColumnMeta<T> ColumnMeta { get; }
-        internal T Value { get; }
+        internal T ValueRaw { get; }
+        internal object Value { get; }
+        internal string? ValueFormatted { get; }
     }
 }

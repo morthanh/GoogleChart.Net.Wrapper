@@ -21,8 +21,8 @@ namespace GoogleChart.Net.Wrapper.Extensions.Tests
             var dataTable = Enumerable.Range(0, 10).Select(x => new { Name = "Test", Value = x })
                 .ToDataTable(config =>
                 {
-                    config.AddColumn(ColumnType.String, x => new Cell(x.Name));
-                    config.AddColumn(ColumnType.Number, x => new Cell(x.Value));
+                    config.AddColumn(ColumnType.String, x => x.Name);
+                    config.AddColumn(ColumnType.Number, x => x.Value);
                 }).ToJson();
 
             Assert.NotNull(dataTable);

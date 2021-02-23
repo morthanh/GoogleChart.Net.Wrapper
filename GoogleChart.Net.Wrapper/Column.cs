@@ -22,19 +22,16 @@ namespace GoogleChart.Net.Wrapper
         public string? Label { get; }
 
         [JsonProperty("type")]
-        //[JsonConverter(typeof(StringEnumConverter))]
         public ColumnType ColumnType { get; }
 
         [JsonProperty("role")]
-        //[JsonConverter(typeof(StringEnumConverter))]
         public ColumnRole? Role { get; }
 
         [JsonIgnore]
-        public Type ValueType { get;  }
+        public Type ValueType { get; }
 
         [JsonIgnore]
         public Action<JsonWriter>? WriterAction { get; }
-
 
         [JsonIgnore]
         internal Func<T, object> ValueSelector { get; }
@@ -53,6 +50,7 @@ namespace GoogleChart.Net.Wrapper
             ValueSelector = valueSelector;
             FormattedSelector = formattedSelector;
         }
+
         private Type GetDefaultColumnValueType(ColumnType columnType)
         {
             return columnType switch

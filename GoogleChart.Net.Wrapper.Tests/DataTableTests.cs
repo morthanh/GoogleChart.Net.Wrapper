@@ -16,7 +16,7 @@ namespace GoogleChart.Net.Wrapper.Tests
         [Test()]
         public void DataTable_Empty_Serialized()
         {
-            var dt = new DataTable();
+            var dt = Enumerable.Range(0, 10).ToDataTable(conf=> { });
 
             var json = dt.ToJson();
 
@@ -29,8 +29,10 @@ namespace GoogleChart.Net.Wrapper.Tests
         [Test()]
         public void AddColumn_NoArgs_Serialized()
         {
-            var dt = new DataTable();
-            dt.AddColumn();
+            var dt = Enumerable.Range(0, 0).ToDataTable(conf =>
+            {
+                conf.AddColumn(x => "");
+            });
 
             var json = dt.ToJson();
 
@@ -51,11 +53,10 @@ namespace GoogleChart.Net.Wrapper.Tests
         [Test]
         public void AddRow_CellInteger_Serialized()
         {
-            var dt = new DataTable();
-            dt.AddColumn(ColumnType.Number);
-
-
-            dt.AddRow(Enumerable.Range(1, 1).Select(x => new Cell(x)));
+            var dt = Enumerable.Range(1, 1).ToDataTable(conf =>
+            {
+                conf.AddColumn(x => x);
+            });
 
             var json = dt.ToJson();
 
@@ -68,12 +69,10 @@ namespace GoogleChart.Net.Wrapper.Tests
         [Test]
         public void AddRow_CellDateTime_Serialized()
         {
-            var dt = new DataTable();
-            dt.AddColumn(ColumnType.Datetime);
-
-            var date = new DateTime(2000, 1, 1, 12, 30, 15);
-
-            dt.AddRow(new List<Cell> { new Cell(date) });
+            var dt = Enumerable.Range(0, 1).ToDataTable(conf =>
+            {
+                conf.AddColumn(ColumnType.Datetime, x => new DateTime(2000, 1, 1, 12, 30, 15));
+            });
 
             var json = dt.ToJson(true);
 
@@ -85,12 +84,10 @@ namespace GoogleChart.Net.Wrapper.Tests
         [Test]
         public void AddRow_CellDate_Serialized()
         {
-            var dt = new DataTable();
-            dt.AddColumn(ColumnType.Date);
-
-            var date = new DateTime(2000, 1, 1, 12, 30, 15);
-
-            dt.AddRow(new List<Cell> { new Cell(date) });
+            var dt = Enumerable.Range(0, 1).ToDataTable(conf =>
+            {
+                conf.AddColumn(ColumnType.Date, x => new DateTime(2000, 1, 1, 12, 30, 15));
+            });
 
             var json = dt.ToJson();
 
@@ -137,10 +134,10 @@ namespace GoogleChart.Net.Wrapper.Tests
         [Test]
         public void AddRow_CellBoolean_Serialized()
         {
-            var dt = new DataTable();
-            dt.AddColumn(ColumnType.Boolean);
-
-            dt.AddRow(new List<Cell> { new Cell(true) });
+            var dt = Enumerable.Range(0, 1).ToDataTable(conf =>
+            {
+                conf.AddColumn(ColumnType.Boolean, x => true);
+            });
 
             var json = dt.ToJson(true);
 

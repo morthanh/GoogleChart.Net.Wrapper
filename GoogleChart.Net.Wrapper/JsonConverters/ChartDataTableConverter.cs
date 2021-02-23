@@ -5,15 +5,15 @@ using System.Collections.Generic;
 namespace GoogleChart.Net.Wrapper.JsonConverters
 {
 
-    public sealed class ChartDataTableConverter : JsonConverter<DataTable>
+    public sealed class ChartDataTableConverter<T> : JsonConverter<DataTable<T>>
     {
-        public override DataTable ReadJson(JsonReader reader, Type objectType, DataTable? existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override DataTable<T> ReadJson(JsonReader reader, Type objectType, DataTable<T>? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             throw new NotImplementedException();
         }
 
 
-        public override void WriteJson(JsonWriter writer, DataTable? dt, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, DataTable<T>? dt, JsonSerializer serializer)
         {
             if (dt == null)
             { 
@@ -37,7 +37,7 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
 
             //write rows
             writer.WritePropertyName("rows");
-            WriteRows(writer, dt.Values, columnsMeta, dt.ColumnLabels);
+            WriteRows(writer, dt.Values, columnsMeta.Count, dt.ColumnLabels);
 
 
             writer.WriteEndObject();
@@ -45,7 +45,7 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
 
 
 
-        private void WriteCols(JsonWriter writer, IReadOnlyList<ColumnMeta> columns, JsonSerializer serializer)
+        private void WriteCols(JsonWriter writer, IReadOnlyList<ColumnMeta<T>> columns, JsonSerializer serializer)
         {
             writer.WriteStartArray();
             foreach (var column in columns)
@@ -57,10 +57,9 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
 
 
 
-        private void WriteRows(JsonWriter writer, IEnumerable<object> valuesSource, IReadOnlyList<ColumnMeta> columns, IList<string> columnLabels)
+        private void WriteRows(JsonWriter writer, IEnumerable<ValueSourceItem<T>> valuesSource, int numColumns, IList<string>? columnLabels)
         {
             int i = 0;
-            int numColumns = columns.Count;
 
 
             writer.WriteStartArray();
@@ -82,7 +81,7 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
                 writer.WriteEndObject();
             }
 
-            foreach (var val in valuesSource)
+            foreach (var sourceItem in valuesSource)
             {
 
                 if (i % numColumns == 0)
@@ -93,7 +92,7 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
                 }
 
                 writer.WriteStartObject();
-                WriteValue(val, columns[i % numColumns], writer);
+                WriteValue(sourceItem, writer);
                 writer.WriteEndObject();
 
                 if (i % numColumns == numColumns - 1)
@@ -117,41 +116,38 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
             writer.WriteValue(v.ToString());
         }
 
-        internal void WriteValue(object v, ColumnMeta columnMeta, JsonWriter writer)
+        internal void WriteValue(ValueSourceItem<T> v, JsonWriter writer)
         {
-            if (columnMeta is null)
+
+
+            if (v.ValueFormatted != null)
             {
-                throw new ArgumentNullException(nameof(columnMeta));
+                writer.WritePropertyName("f");
+                writer.WriteValue(v.ValueFormatted);
             }
 
+
             writer.WritePropertyName("v");
-            if (v is null)
+            if (v.Value is null)
             {
                 writer.WriteNull();
                 return;
             }
 
-            object val = v;
-            string? formattedVal;
+            object val = v.Value;
 
-            if (v is Cell cell)
+
+            if (v.ColumnMeta.WriterAction != null)
             {
-                val = cell.Value;
-                formattedVal = cell.Formatted;
-            }
-
-
-            if (columnMeta.WriterAction != null)
-            {
-                columnMeta.WriterAction(writer);
+                v.ColumnMeta.WriterAction(writer);
             }
             else
             {
-                switch (columnMeta.ColumnType)
+                switch (v.ColumnMeta.ColumnType)
                 {
                     case ColumnType.Number:
 
-                        var nullValType = Nullable.GetUnderlyingType(columnMeta.ValueType);
+                        var nullValType = Nullable.GetUnderlyingType(v.ColumnMeta.ValueType);
                         if (nullValType != null && val is null)
                         {
                             writer.WriteNull();
@@ -195,7 +191,7 @@ namespace GoogleChart.Net.Wrapper.JsonConverters
                         //writer.WriteRaw( string.Format("[{0}, {1}, {2}]", tod.Hours, tod.Minutes, tod.Seconds));
                         break;
                     default:
-                        throw new Exception($"Columntype '{columnMeta.ColumnType}' not supported");
+                        throw new Exception($"Columntype '{v.ColumnMeta.ColumnType}' not supported");
                 }
             }
 

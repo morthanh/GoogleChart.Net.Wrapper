@@ -9,11 +9,10 @@ namespace GoogleChart.Net.Wrapper.Extensions
     {
 
 
-        public static DataTable ToDataTable<T>(this IEnumerable<T> source, Action<DataTableConfiguration<T>> config)
+        public static DataTable<T> ToDataTable<T>(this IEnumerable<T> source, Action<DataTableConfiguration<T>> config)
         {
             var configurations = new DataTableConfiguration<T>(source);
             config(configurations);
-            configurations.Build();
             return configurations.DataTable;
         }
 

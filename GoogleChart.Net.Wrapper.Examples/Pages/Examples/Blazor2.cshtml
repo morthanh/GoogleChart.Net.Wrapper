@@ -5,12 +5,7 @@
 
 @{
     int i = 0;
-    var dt = new DataTable();
-    dt.AddColumn();
-    dt.AddColumn(ColumnType.Number);
-    Data.TestData.Data1Dim.ToList().ForEach(x => dt.AddRow(new Cell[] { new Cell(++i), new Cell(x) }));
-
-    dt = Data.TestData.Data1Dim.ToDataTable(conf =>
+    var dt = Data.TestData.Data1Dim.ToDataTable(conf =>
     {
         conf.AddColumn(x => i++);
         conf.AddColumn(x => x);

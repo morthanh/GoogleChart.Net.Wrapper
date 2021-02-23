@@ -15,7 +15,7 @@ namespace GoogleChart.Net.Wrapper.Datasource
         [JsonProperty("sig")]
         public string Sig { get; set; }
         [JsonProperty("table")]
-        public DataTable Table { get; set; }
+        public DataTableBase Table { get; set; }
         [JsonProperty("warnings")]
         public IEnumerable<ResponseWarning> Warnings { get; set; }
         [JsonProperty("errors")]
