@@ -1,4 +1,4 @@
-﻿@model GoogleChart.Net.Wrapper.Examples.Pages.LoginModel
+﻿@model GoogleChart.Net.Wrapper.Examples.Controllers.LoginModel
 
 
 @if (User.Identity.IsAuthenticated)
@@ -11,8 +11,8 @@
 else
 {
 <form method="post" class="form-inline" action="/auth/login">
-    <input asp-for="loginData.Username" value="username" class="form-control mr-sm-2" placeholder="Username" />
-    <input asp-for="loginData.Password" value="password" class="form-control mr-sm-2" placeholder="Password" />
+    <input asp-for="@Model.Username" value="username" class="form-control mr-sm-2" placeholder="Username" />
+    <input asp-for="@Model.Password" value="password" class="form-control mr-sm-2" placeholder="Password" />
     <input class="btn btn-primary" type="submit" value="Login" />
     @Html.AntiForgeryToken()
 </form>

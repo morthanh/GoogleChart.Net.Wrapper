@@ -22,7 +22,7 @@ namespace GoogleChart.Net.Wrapper.Examples.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginData loginData)
+        public async Task<IActionResult> Login(LoginModel loginData)
         {
             if (ModelState.IsValid)
             {
@@ -56,7 +56,7 @@ namespace GoogleChart.Net.Wrapper.Examples.Controllers
         }
     }
 
-    public class LoginData
+    public class LoginModel
     {
         [Required]
         public string Username { get; set; }

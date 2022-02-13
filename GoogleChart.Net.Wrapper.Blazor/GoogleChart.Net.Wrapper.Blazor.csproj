@@ -13,7 +13,7 @@
     <RepositoryUrl>https://github.com/morthanh/GoogleChart.Net.Wrapper</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IsPackable>true</IsPackable>
-    <Version>0.3.2-alpha</Version>
+    <Version>0.3.3-alpha</Version>
   </PropertyGroup>
 
   <ItemGroup>
