@@ -1,0 +1,19 @@
+﻿@model GoogleChart.Net.Wrapper.Examples.Pages.LoginModel
+
+
+@if (User.Identity.IsAuthenticated)
+{
+<form method="post" action="/auth/logout">
+    <input type="submit" value="Logout" class="btn btn-primary" />
+    @Html.AntiForgeryToken()
+</form>
+}
+else
+{
+<form method="post" class="form-inline" action="/auth/login">
+    <input asp-for="loginData.Username" value="username" class="form-control mr-sm-2" placeholder="Username" />
+    <input asp-for="loginData.Password" value="password" class="form-control mr-sm-2" placeholder="Password" />
+    <input class="btn btn-primary" type="submit" value="Login" />
+    @Html.AntiForgeryToken()
+</form>
+}

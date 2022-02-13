@@ -18,7 +18,7 @@ namespace GoogleChart.Net.Wrapper.Examples.Pages.Examples
             int i = 1;
             DataJson = Data.TestData.Data2DimWithLabels.ToDataTable(conf =>
             {
-                conf.AddColumn(x => new DateTime(2020, 10, i++));
+                conf.AddColumn(x => new DateTime(2020, 10, i++), (r, v) => v.ToString("yyyy-MM-dd"));
                 conf.AddColumn("Apples", x => x.Item2);
                 conf.AddColumn("Oranges", x => x.Item3);
             }).ToJson();
@@ -36,7 +36,6 @@ namespace GoogleChart.Net.Wrapper.Examples.Pages.Examples
                     Baseline = new DateTime(2020, 10, 3),
                     BaselineColor = Color.Red,
                     Direction = -1,
-                    Format = "yyyy-MM-dd",
                     Gridlines = new AxisGridLines
                     {
                         Color = Color.Blue,

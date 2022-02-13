@@ -16,6 +16,7 @@
     <TransformOnBuild>true</TransformOnBuild>
     <OverwriteReadOnlyOutputFiles>true</OverwriteReadOnlyOutputFiles>
     <TransformOutOfDateOnly>false</TransformOutOfDateOnly>
+    <Version>0.3.2-alpha</Version>
   </PropertyGroup>
 
   <ItemGroup>

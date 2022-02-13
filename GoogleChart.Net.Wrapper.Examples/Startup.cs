@@ -10,6 +10,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using GoogleChart.Net.Wrapper.Datasource;
 using GoogleChart.Net.Wrapper.Examples.ChartApiHandlers;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 
 namespace GoogleChart.Net.Wrapper.Examples
 {
@@ -27,6 +29,7 @@ namespace GoogleChart.Net.Wrapper.Examples
         {
             services.AddScoped<Api1Handler>();
             services.AddScoped<ApiHandlerWithRouting>();
+            services.AddScoped<ApiHandlerWithAuthentication>();
 
 
             services.AddRazorPages()
@@ -36,12 +39,20 @@ namespace GoogleChart.Net.Wrapper.Examples
             {
                 opt.AddHandler<Api1Handler>("/test");
                 opt.AddHandler<ApiHandlerWithRouting>();
+                opt.AddHandler<ApiHandlerWithAuthentication>();
                 opt.IsDevelopment = true;
             });
 
             services.AddServerSideBlazor();
 
             services.AddControllers();
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
+                    options =>
+                    {
+                        options.LoginPath = new PathString("/index");
+                    });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -63,6 +74,8 @@ namespace GoogleChart.Net.Wrapper.Examples
 
             app.UseRouting();
 
+            app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.UseGoogleChartApi();
@@ -73,7 +86,12 @@ namespace GoogleChart.Net.Wrapper.Examples
                 endpoints.MapRazorPages();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
+
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
         }
     }
 }

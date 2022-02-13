@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,12 +10,9 @@ namespace GoogleChart.Net.Wrapper.Datasource
 {
     public class GoogleChartOptions
     {
-
-
         public PathString RouteBasePath { get; set; } = "/api/gc";
 
         public bool IsDevelopment { get; set; } = false;
-
 
         internal List<GoogleChartHandlerOption> Handlers { get; set; } = new List<GoogleChartHandlerOption>();
 
@@ -45,11 +43,13 @@ namespace GoogleChart.Net.Wrapper.Datasource
 
             
             Route = GetHandlerRouteAttributeTemplate(HandlerType);
+            AuthorizeAttributes = GetAuthorizeAttributes(HandlerType);
         }
 
         internal Type HandlerType { get; }
         internal string Route { get; private set; }
         
+        internal List<AuthorizeAttribute> AuthorizeAttributes { get; private set; }
 
         public void WithRoute(string route)
         {
@@ -61,6 +61,10 @@ namespace GoogleChart.Net.Wrapper.Datasource
         }
 
 
+        private List<AuthorizeAttribute> GetAuthorizeAttributes(Type handlerType)
+        {
+            return handlerType.GetCustomAttributes<AuthorizeAttribute>().ToList();
+        }
 
 
         private string GetHandlerRouteAttributeTemplate(Type handlerType)

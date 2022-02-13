@@ -37,9 +37,9 @@ namespace GoogleChart.Net.Wrapper
         internal Func<T, object> ValueSelector { get; }
 
         [JsonIgnore]
-        internal Func<T, string>? FormattedSelector { get; }
+        internal Func<T,object, string>? FormattedSelector { get; }
 
-        internal ColumnMeta(string? id, string? label, ColumnType columnType, ColumnRole? role, Type? valueType, Action<JsonWriter>? writerAction, Func<T, object> valueSelector, Func<T, string>? formattedSelector)
+        internal ColumnMeta(string? id, string? label, ColumnType columnType, ColumnRole? role, Type? valueType, Action<JsonWriter>? writerAction, Func<T, object> valueSelector, Func<T,object, string>? formattedSelector)
         {
             Id = id;
             Label = label;
